@@ -1,0 +1,3 @@
+idna
+boto3
+requests
