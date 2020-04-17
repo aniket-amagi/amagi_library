@@ -134,7 +134,7 @@ class S3ObjectList(object):
 
             for item in list_objects_response["Contents"]:
                 if self.__object_filter(item):
-                    object_name = item['Key'].split('/')[-1]
+                    object_name = item['Key']
                     logging.debug(f"Object available in s3 in folder {self.folder_to_check} : " + object_name)
                     self.object_dict.update({object_name: item})
 
