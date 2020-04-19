@@ -8,7 +8,7 @@ import traceback
 
 from boto3.s3.transfer import TransferConfig
 
-from boto3_helper.client import Client
+from amagi_library.boto3_helper.client import Client
 
 
 class CopyObjectFromS3ToS3(object):

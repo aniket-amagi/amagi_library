@@ -8,7 +8,7 @@ import logging
 
 from boto3.dynamodb.conditions import Key
 
-from boto3_helper.resource import Resource
+from amagi_library.boto3_helper.resource import Resource
 
 
 class DynamoAccessor(object):

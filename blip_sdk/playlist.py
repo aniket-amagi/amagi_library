@@ -5,7 +5,7 @@ This is a helper script for consuming Blip Playlist API
 """
 import logging
 
-from helper.http_requests import HTTPRequests
+from amagi_library.helper.http_requests import HTTPRequests
 
 
 class Playlist(object):

@@ -5,7 +5,7 @@ This scripts actually creates cloud-formation stack
 """
 import logging
 
-from boto3_helper.client import Client
+from amagi_library.boto3_helper.client import Client
 
 
 class CloudFormationCreateStack(object):

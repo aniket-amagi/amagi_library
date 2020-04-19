@@ -8,7 +8,7 @@ import traceback
 
 import boto3
 
-from boto3_helper.arn_session import assumed_role_session
+from amagi_library.boto3_helper.arn_session import assumed_role_session
 
 
 class Client(object):
@@ -61,6 +61,7 @@ class Client(object):
             raise BaseException("Problem in client.py")
         finally:
             return client
+
 
 if __name__ == "__main__":
     # LOGGING #

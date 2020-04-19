@@ -5,7 +5,7 @@ This is a helper script for consuming Blip Feed API
 """
 import logging
 
-from helper.http_requests import HTTPRequests
+from amagi_library.helper.http_requests import HTTPRequests
 
 
 class Feeds(object):
@@ -40,7 +40,7 @@ class Feeds(object):
 
 
 if __name__ == "__main__":
-    from helper.deserializer import Deserializer
+    from amagi_library.helper.deserializer import Deserializer
     from pprint import pprint
 
     # LOGGING #

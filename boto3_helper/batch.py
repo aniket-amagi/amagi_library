@@ -6,7 +6,7 @@ This scripts actually submit batch jobs
 import logging
 import traceback
 
-from boto3_helper.client import Client
+from amagi_library.boto3_helper.client import Client
 
 
 class SubmitBatchJob(object):
@@ -54,6 +54,7 @@ class SubmitBatchJob(object):
             raise BaseException("Problem in batch.py")
         finally:
             logging.info("Batch Job submission response: {0}".format(response))
+
 
 if __name__ == "__main__":
     # LOGGING #

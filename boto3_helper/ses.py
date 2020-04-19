@@ -6,7 +6,7 @@ from email.mime.text import MIMEText
 
 from botocore.exceptions import ClientError
 
-from boto3_helper.client import Client
+from amagi_library.boto3_helper.client import Client
 
 # The character encoding for the email.
 CHARSET = "utf-8"
