@@ -5,7 +5,11 @@ This is a helper script for consuming Blip Media API
 """
 import logging
 
-from amagi_library.helper.http_requests import HTTPRequests
+try:
+    from amagi_library.helper.http_requests import HTTPRequests
+except ModuleNotFoundError:
+    logging.info("Module called internally")
+    from helper.http_requests import HTTPRequests
 
 
 class Media(object):

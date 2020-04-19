@@ -8,7 +8,11 @@ import traceback
 
 import boto3
 
-from amagi_library.boto3_helper.arn_session import assumed_role_session
+try:
+    from amagi_library.boto3_helper.arn_session import assumed_role_session
+except ModuleNotFoundError:
+    logging.info("Module called internally")
+    from boto3_helper.arn_session import assumed_role_session
 
 
 class Client(object):

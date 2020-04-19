@@ -8,7 +8,11 @@ import traceback
 
 from boto3.s3.transfer import TransferConfig
 
-from amagi_library.boto3_helper.client import Client
+try:
+    from amagi_library.boto3_helper.client import Client
+except ModuleNotFoundError:
+    logging.info("Module called internally")
+    from boto3_helper.client import Client
 
 
 class CopyObjectFromS3ToS3(object):

@@ -5,7 +5,11 @@ This scripts actually creates cloud-formation stack
 """
 import logging
 
-from amagi_library.boto3_helper.client import Client
+try:
+    from amagi_library.boto3_helper.client import Client
+except ModuleNotFoundError:
+    logging.info("Module called internally")
+    from boto3_helper.client import Client
 
 
 class CloudFormationCreateStack(object):

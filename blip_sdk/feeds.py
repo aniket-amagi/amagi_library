@@ -5,7 +5,11 @@ This is a helper script for consuming Blip Feed API
 """
 import logging
 
-from amagi_library.helper.http_requests import HTTPRequests
+try:
+    from amagi_library.helper.http_requests import HTTPRequests
+except ModuleNotFoundError:
+    logging.info("Module called internally")
+    from helper.http_requests import HTTPRequests
 
 
 class Feeds(object):
@@ -40,7 +44,7 @@ class Feeds(object):
 
 
 if __name__ == "__main__":
-    from amagi_library.helper.deserializer import Deserializer
+    from helper.deserializer import Deserializer
     from pprint import pprint
 
     # LOGGING #

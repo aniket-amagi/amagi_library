@@ -8,7 +8,11 @@ import logging
 
 from boto3.dynamodb.conditions import Key
 
-from amagi_library.boto3_helper.resource import Resource
+try:
+    from amagi_library.boto3_helper.resource import Resource
+except ModuleNotFoundError:
+    logging.info("Module called internally")
+    from boto3_helper.resource import Resource
 
 
 class DynamoAccessor(object):
