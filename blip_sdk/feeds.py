@@ -31,6 +31,10 @@ class Feeds(object):
         self.http_requests_instance = HTTPRequests()
         logging.debug("Instance variables for Feeds : " + str(self.__dict__))
 
+    def __del__(self):
+        # Removing HTTP request session
+        self.http_requests_instance.__del__()
+
     def get_feed_id_request(self):
         """
         This method does a GET call to Blip to get feed list
