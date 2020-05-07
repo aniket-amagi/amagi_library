@@ -143,6 +143,7 @@ class HTTPRequests(object):
     def call_head_requests(self, url, error_message="Error in HEAD Request"):
         """
         Static method to call requests to get response using HEAD calls
+        :param url:  URL for get call
         :param error_message: Error message to be printed in case of exception
         :return: Response from the requests call
         """
