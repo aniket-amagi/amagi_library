@@ -32,6 +32,10 @@ class Media(object):
 
         logging.debug("Instance variables for Media : " + str(self.__dict__))
 
+    def __del__(self):
+        # Removing HTTP request session
+        self.http_requests_instance.__del__()
+
     def get_all_media_details(self, **kwargs):
         """
         This method get media details for an asset id

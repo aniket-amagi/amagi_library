@@ -32,6 +32,10 @@ class Playlist(object):
 
         logging.debug("Instance variables for Playlist : " + str(self.__dict__))
 
+    def __del__(self):
+        # Removing HTTP request session
+        self.http_requests_instance.__del__()
+
     def get_playlist_request(self, **kwargs):
         """
         This method does a GET call to Blip to get playlist.

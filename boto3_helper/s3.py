@@ -83,6 +83,38 @@ class CopyToS3(object):
             raise BaseException("Problem in s3.py")
 
 
+class DisplayS3Object(object):
+    """
+    This class handles list of object data from S3
+    """
+
+    def __init__(self, **kwargs):
+        # Required variable to drive this Class, expected to be provided from parent Object
+        self.aws_details = None
+        self.__dict__.update(kwargs)
+
+        self.s3_client_instance = Client(aws_details=self.aws_details).return_client(
+            service_name='s3')
+
+        logging.debug("Instance variables for DisplayS3Object : " + str(self.__dict__))
+
+    def object_content(self, **kwargs):
+        """
+        This method downloads file from local machine to s3 and then prints it
+        """
+        try:
+            source = self.s3_client_instance.get_object(
+                Bucket=kwargs["s3_details"]["bucket_name"],
+                Key=kwargs["object_path"]
+            )
+
+            return source["Body"].read()
+
+        except BaseException:
+            logging.error("Uncaught exception in s3.py: " + traceback.format_exc())
+            raise BaseException("Problem in s3.py")
+
+
 class S3ObjectList(object):
     """
         This class creates dict of s3 objects with some basic filter
@@ -190,10 +222,3 @@ if __name__ == "__main__":
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
     logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
     logger = logging.getLogger(__name__)
-    url = "https://cdn.jwplayer.com/videos/1fYRzg9q-hNhY2S0c.mp4"
-    destination_s3_details = {
-        "bucket_name": "aniket-dev"
-    }
-    object_destination_path = "a.mp4"
-    CopyToS3().stream_data_to_destination_s3(url=url, destination_s3_details=destination_s3_details,
-                                             object_destination_path=object_destination_path)

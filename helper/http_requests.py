@@ -79,14 +79,17 @@ class HTTPRequests(object):
             logging.debug(f"Status Code : {response.status_code}")
             logging.debug(f"Total Time taken : {response.elapsed}")
             logging.debug(f"Encoding : {response.encoding}")
-            logging.debug(f"Response Text : {response.text}")
             logging.debug(f"Response Headers : {response.headers}")
             logging.debug(f"Request Headers : {response.request.headers}")
+            if response.encoding:
+                logging.debug(f"Response Text : {response.text}")
         return response
 
-    def call_post_requests(self, url, headers=None, params=None, files=None, error_message="Error in POST Request"):
+    def call_post_requests(self, url, data=None, headers=None, params=None, files=None,
+                           error_message="Error in POST Request"):
         """
         Static method to call requests to get response using POST calls
+        :param data: data for post call
         :param files: files for post call
         :param headers: Header for post call
         :param url:  URL for post call
@@ -97,18 +100,20 @@ class HTTPRequests(object):
         response = None
         logging.info("Parameters for the API call : " + str(params))
         logging.info("Headers for the API call : " + str(headers))
-        logging.info("Files for the API Call : " + str(files))
+        logging.info("Files for the API call : " + str(files))
+        logging.info("Data for the API call : " + str(data))
         try:
-            response = self.session.post(url, headers=headers, params=params, files=files)
+            response = self.session.post(url, headers=headers, params=params, files=files, data=data)
         except requests.RequestException as error:
             logging.error(error_message + str(error))
         finally:
             logging.debug(f"Status Code : {response.status_code}")
             logging.debug(f"Total Time taken : {response.elapsed}")
             logging.debug(f"Encoding : {response.encoding}")
-            logging.debug(f"Response Text : {response.text}")
             logging.debug(f"Response Headers : {response.headers}")
             logging.debug(f"Request Headers : {response.request.headers}")
+            if response.encoding:
+                logging.debug(f"Response Text : {response.text}")
         return response
 
     def call_delete_requests(self, url, params=None, error_message="Error in DELETE Request"):
@@ -129,9 +134,10 @@ class HTTPRequests(object):
             logging.debug(f"Status Code : {response.status_code}")
             logging.debug(f"Total Time taken : {response.elapsed}")
             logging.debug(f"Encoding : {response.encoding}")
-            logging.debug(f"Response Text : {response.text}")
             logging.debug(f"Response Headers : {response.headers}")
             logging.debug(f"Request Headers : {response.request.headers}")
+            if response.encoding:
+                logging.debug(f"Response Text : {response.text}")
         return response
 
     def call_head_requests(self, url, error_message="Error in HEAD Request"):

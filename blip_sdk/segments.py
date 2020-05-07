@@ -32,6 +32,10 @@ class Segments(object):
 
         logging.debug("Instance variables for Playlist : " + str(self.__dict__))
 
+    def __del__(self):
+        # Removing HTTP request session
+        self.http_requests_instance.__del__()
+
     def post_segment_information(self, media_id, **kwargs):
         """
         This method to put media details
