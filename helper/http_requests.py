@@ -134,6 +134,30 @@ class HTTPRequests(object):
             logging.debug(f"Request Headers : {response.request.headers}")
         return response
 
+    def call_head_requests(self, url, error_message="Error in HEAD Request"):
+        """
+        Static method to call requests to get response using HEAD calls
+        :param error_message: Error message to be printed in case of exception
+        :return: Response from the requests call
+        """
+        response = None
+        try:
+            response = self.session.head(url)
+        except requests.RequestException as error:
+            logging.error(error_message + str(error))
+        finally:
+            if response:
+                logging.debug(f"Status Code : {response.status_code}")
+                logging.debug(f"Total Time taken : {response.elapsed}")
+                logging.debug(f"Encoding : {response.encoding}")
+                logging.debug(f"Response Headers : {response.headers}")
+                logging.debug(f"Request Headers : {response.request.headers}")
+                if response.encoding:
+                    logging.debug(f"Response Text : {response.text}")
+            else:
+                logging.critical("No response!!")
+        return response
+
 
 if __name__ == "__main__":
     # LOGGING #
