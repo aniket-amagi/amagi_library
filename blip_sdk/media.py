@@ -81,6 +81,7 @@ class Media(object):
             logging.info("PUT url invoked to put details: " + url)
             kwargs.update(self.default_payload)
             return self.http_requests_instance.call_put_requests(url=url, params=kwargs, data=data,
+                                                                 headers={'Content-Type': 'application/json'},
                                                                  error_message="Error occurred when trying to "
                                                                                "access Blip for "
                                                                                "putting Asset Details : ")

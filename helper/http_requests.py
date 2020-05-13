@@ -17,7 +17,7 @@ class HTTPRequests(object):
         # Created Requests session for Blip API
         self.session = requests.Session()
 
-        logging.debug("Instance variables for HTTPRequests : " + str(self.__dict__))
+        logging.debug(f"Instance variables for HTTPRequests : {self.__dict__}")
 
     def __del__(self):
         """
@@ -25,9 +25,10 @@ class HTTPRequests(object):
         """
         self.session.close()
 
-    def call_get_requests(self, url, params=None, stream=False, error_message="Error in GET Request"):
+    def call_get_requests(self, url, headers=None, params=None, stream=False, error_message="Error in GET Request"):
         """
         Static method to call requests to get response using GET calls
+        :param headers: Headers for get call
         :param stream: If data to be streamed ?
         :param url:  URL for get call
         :param params:  Parameters for the call
@@ -35,10 +36,12 @@ class HTTPRequests(object):
         :return: Response from the requests call
         """
         response = None
-        logging.info("Parameters for the API call : " + str(params))
+        logging.info(f"Parameters for the API call : {params}")
+        logging.info(f"Headers for the API call : {headers}")
+        logging.info(f"Request Stream ? : {stream}")
         try:
-            response = self.session.get(url, params=params, stream=stream)
-        except requests.RequestException as error:
+            response = self.session.get(url, headers=headers, params=params, stream=stream)
+        except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
             if response:
@@ -64,16 +67,12 @@ class HTTPRequests(object):
         :return: Response from the requests call
         """
         response = None
-        if not headers:
-            headers = {
-                'Content-Type': 'application/json'
-            }
-        logging.info("Parameters for the API call : " + str(params))
-        logging.info("Headers for the API call : " + str(headers))
-        logging.info("Data for the API Call : " + str(data))
+        logging.info(f"Parameters for the API call : {params}")
+        logging.info(f"Headers for the API call : {headers}")
+        logging.info(f"Data for the API call : {data}")
         try:
             response = self.session.put(url, headers=headers, params=params, data=data)
-        except requests.RequestException as error:
+        except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
             logging.debug(f"Status Code : {response.status_code}")
@@ -98,13 +97,13 @@ class HTTPRequests(object):
         :return: Response from the requests call
         """
         response = None
-        logging.info("Parameters for the API call : " + str(params))
-        logging.info("Headers for the API call : " + str(headers))
-        logging.info("Files for the API call : " + str(files))
-        logging.info("Data for the API call : " + str(data))
+        logging.info(f"Parameters for the API call : {params}")
+        logging.info(f"Headers for the API call : {headers}")
+        logging.info(f"Data for the API call : {data}")
+        logging.info(f"Files for the API call : {files}")
         try:
             response = self.session.post(url, headers=headers, params=params, files=files, data=data)
-        except requests.RequestException as error:
+        except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
             logging.debug(f"Status Code : {response.status_code}")
@@ -125,10 +124,10 @@ class HTTPRequests(object):
         :return: Response from the requests call
         """
         response = None
-        logging.info("Parameters for the API call : " + str(params))
+        logging.info(f"Parameters for the API call : {params}")
         try:
             response = self.session.delete(url, params=params)
-        except requests.RequestException as error:
+        except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
             logging.debug(f"Status Code : {response.status_code}")
@@ -150,7 +149,7 @@ class HTTPRequests(object):
         response = None
         try:
             response = self.session.head(url)
-        except requests.RequestException as error:
+        except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
             if response:
@@ -169,5 +168,6 @@ class HTTPRequests(object):
 if __name__ == "__main__":
     # LOGGING #
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
+    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
     logger = logging.getLogger(__name__)
+    HTTPRequests().call_get_requests('http://www.google.com')
