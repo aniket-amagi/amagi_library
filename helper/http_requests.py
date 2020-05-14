@@ -36,9 +36,10 @@ class HTTPRequests(object):
         :return: Response from the requests call
         """
         response = None
-        logging.info(f"Parameters for the API call : {params}")
-        logging.info(f"Headers for the API call : {headers}")
-        logging.info(f"Request Stream ? : {stream}")
+        logging.info(f"Url for HTTP request : {url}")
+        logging.info(f"Parameters for HTTP request : {params}")
+        logging.info(f"Headers for HTTP request : {headers}")
+        logging.info(f"Request Stream (True/False)? : {stream}")
         try:
             response = self.session.get(url, headers=headers, params=params, stream=stream)
         except requests.exceptions.RequestException as error:
@@ -67,9 +68,10 @@ class HTTPRequests(object):
         :return: Response from the requests call
         """
         response = None
-        logging.info(f"Parameters for the API call : {params}")
-        logging.info(f"Headers for the API call : {headers}")
-        logging.info(f"Data for the API call : {data}")
+        logging.info(f"Url for HTTP request : {url}")
+        logging.info(f"Parameters for HTTP request : {params}")
+        logging.info(f"Headers for HTTP request : {headers}")
+        logging.info(f"Data for HTTP request : {data}")
         try:
             response = self.session.put(url, headers=headers, params=params, data=data)
         except requests.exceptions.RequestException as error:
@@ -97,10 +99,11 @@ class HTTPRequests(object):
         :return: Response from the requests call
         """
         response = None
-        logging.info(f"Parameters for the API call : {params}")
-        logging.info(f"Headers for the API call : {headers}")
-        logging.info(f"Data for the API call : {data}")
-        logging.info(f"Files for the API call : {files}")
+        logging.info(f"Url for HTTP request : {url}")
+        logging.info(f"Parameters for HTTP request : {params}")
+        logging.info(f"Headers for HTTP request : {headers}")
+        logging.info(f"Data for HTTP request : {data}")
+        logging.info(f"Files for HTTP request : {files}")
         try:
             response = self.session.post(url, headers=headers, params=params, files=files, data=data)
         except requests.exceptions.RequestException as error:
@@ -124,7 +127,8 @@ class HTTPRequests(object):
         :return: Response from the requests call
         """
         response = None
-        logging.info(f"Parameters for the API call : {params}")
+        logging.info(f"Url for HTTP request : {url}")
+        logging.info(f"Parameters for HTTP request : {params}")
         try:
             response = self.session.delete(url, params=params)
         except requests.exceptions.RequestException as error:
@@ -147,6 +151,7 @@ class HTTPRequests(object):
         :return: Response from the requests call
         """
         response = None
+        logging.info(f"Url for HTTP request : {url}")
         try:
             response = self.session.head(url)
         except requests.exceptions.RequestException as error:
