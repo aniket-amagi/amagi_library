@@ -216,6 +216,99 @@ class S3ObjectList(object):
         finally:
             return self.object_dict
 
+class S3DeleteObject(object):
+    """
+        Deletes s3 objects
+    """
+
+    def __init__(self, **kwargs):
+
+        # Required variables to drive this Object
+        self.aws_details = None
+
+        self.__dict__.update(kwargs)
+
+        # Variable recieved later when method called
+        self.s3_details = None
+
+        # S3 Client instance to use
+        self.s3_instance = Client(aws_details=self.aws_details).return_client(service_name='s3')
+
+        # Object dictionary
+        self.object_dict = None
+
+        logging.debug("Instance variables for S3DeleteObject : " + str(self.__dict__))
+
+    def __add_details_to_object_dict(self, response):
+        """
+        This method recursively add data into object Dictionary
+        :param list_objects_response: list_objects_response from boto3 s3 client
+        """
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] == 204 :
+            logging.info("Deleted successfully")
+        else:
+            logging.error("Response from delete : " + str(response["ResponseMetadata"]))
+
+    def delete_from_s3(self, **kwargs):
+        """
+        Driving method which will get contents of all the objects in s3
+        :return: Returns object dict containing details about s3
+        """
+        self.s3_details = kwargs["s3_details"]
+
+        try:
+            self.object_dict = dict()
+
+            # Required parameter to call list_objects_v2
+            self.__add_details_to_object_dict(self.s3_instance.delete_object(Bucket=self.s3_details["bucket_name"],
+                                                                               Key=kwargs["Key"]))
+        except BaseException:
+            logging.error("Uncaught exception in s3.py " + traceback.format_exc())
+            raise BaseException("Problem in s3.py")
+        finally:
+            return self.object_dict
+
+class MoveObjectFromS3ToS3(object):
+    """
+    This class handles all the s3 object move
+    """
+
+    def __init__(self, **kwargs):
+        # Required variable to drive this Class, expected to be provided from parent Object
+        self.source_aws_details = None
+        self.destination_aws_details = None
+
+        self.__dict__.update(kwargs)
+
+        self.source_s3_client_instance = Client(aws_details=self.source_aws_details).return_client(service_name='s3')
+        self.destination_s3_client_instance = Client(aws_details=self.destination_aws_details).return_client(
+            service_name='s3')
+
+        logging.debug("Instance variables for MoveObjectFromS3ToS3 : " + str(self.__dict__))
+
+    def move_from_source_to_destination_s3(self, **kwargs):
+        """
+        This method downloads file from one s3 to another s3
+        """
+        try:
+            copy_source = self.source_s3_client_instance.get_object(
+                Bucket=kwargs["source_s3_details"]["bucket_name"],
+                Key=kwargs["object_original_path"]
+            )
+
+            # chunk of 250 Mb
+            config = TransferConfig(multipart_threshold=1024 * 25, multipart_chunksize=1024 * 25)
+
+            self.destination_s3_client_instance.upload_fileobj(copy_source["Body"],
+                                                               kwargs["destination_s3_details"]["bucket_name"],
+                                                               kwargs["object_destination_path"], Config=config)
+
+            del_obj = S3DeleteObject(aws_details=self.source_aws_details)
+            del_obj.delete_from_s3(s3_details = kwargs["source_s3_details"], Key = kwargs["object_original_path"])
+        except BaseException:
+            logging.error("Uncaught exception in s3.py: " + traceback.format_exc())
+            raise BaseException("Problem in s3.py")
 
 if __name__ == "__main__":
     # LOGGING #
