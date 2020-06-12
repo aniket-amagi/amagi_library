@@ -16,7 +16,7 @@ def read_json(json_file):
         with open(json_file) as file:
             return json.load(file)
     except Exception as e:
-        logging.exception("Exception... [%s] File [%s]".format(str(e), json_file))
+        logging.exception("Exception... {} File {}".format(str(e), json_file))
     return None
 
 if __name__ == "__main__":
