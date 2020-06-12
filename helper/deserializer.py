@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # coding= utf-8
 """
-This is a helper script for sending HTTP Requests
+This is a helper script to deserialize data
 """
 import json
 import logging
