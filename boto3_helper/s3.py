@@ -127,7 +127,7 @@ class S3ObjectList(object):
 
         self.__dict__.update(kwargs)
 
-        # Variable recieved later when method called
+        # Variable received later when method called
         self.s3_details = None
         self.s3_object_filter = None
         self.folder_to_check = ""
@@ -216,6 +216,7 @@ class S3ObjectList(object):
         finally:
             return self.object_dict
 
+
 class S3DeleteObject(object):
     """
         Deletes s3 objects
@@ -228,7 +229,7 @@ class S3DeleteObject(object):
 
         self.__dict__.update(kwargs)
 
-        # Variable recieved later when method called
+        # Variable received later when method called
         self.s3_details = None
 
         # S3 Client instance to use
@@ -239,13 +240,14 @@ class S3DeleteObject(object):
 
         logging.debug("Instance variables for S3DeleteObject : " + str(self.__dict__))
 
-    def __add_details_to_object_dict(self, response):
+    @staticmethod
+    def __add_details_to_object_dict(response):
         """
         This method recursively add data into object Dictionary
-        :param list_objects_response: list_objects_response from boto3 s3 client
+        :param response: list_objects_response from boto3 s3 client
         """
 
-        if response["ResponseMetadata"]["HTTPStatusCode"] == 204 :
+        if response["ResponseMetadata"]["HTTPStatusCode"] == 204:
             logging.info("Deleted successfully")
         else:
             logging.error("Response from delete : " + str(response["ResponseMetadata"]))
@@ -261,13 +263,15 @@ class S3DeleteObject(object):
             self.object_dict = dict()
 
             # Required parameter to call list_objects_v2
-            self.__add_details_to_object_dict(self.s3_instance.delete_object(Bucket=self.s3_details["bucket_name"],
-                                                                               Key=kwargs["Key"]))
+            S3DeleteObject.__add_details_to_object_dict(
+                self.s3_instance.delete_object(Bucket=self.s3_details["bucket_name"],
+                                               Key=kwargs["Key"]))
         except BaseException:
             logging.error("Uncaught exception in s3.py " + traceback.format_exc())
             raise BaseException("Problem in s3.py")
         finally:
             return self.object_dict
+
 
 class MoveObjectFromS3ToS3(object):
     """
@@ -305,10 +309,11 @@ class MoveObjectFromS3ToS3(object):
                                                                kwargs["object_destination_path"], Config=config)
 
             del_obj = S3DeleteObject(aws_details=self.source_aws_details)
-            del_obj.delete_from_s3(s3_details = kwargs["source_s3_details"], Key = kwargs["object_original_path"])
+            del_obj.delete_from_s3(s3_details=kwargs["source_s3_details"], Key=kwargs["object_original_path"])
         except BaseException:
             logging.error("Uncaught exception in s3.py: " + traceback.format_exc())
             raise BaseException("Problem in s3.py")
+
 
 if __name__ == "__main__":
     # LOGGING #
