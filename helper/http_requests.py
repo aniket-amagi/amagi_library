@@ -25,7 +25,7 @@ class HTTPRequests(object):
         """
         self.session.close()
 
-    def call_get_requests(self, url, headers=None, params=None, stream=False, error_message="Error in GET Request"):
+    def call_get_requests(self, url, headers=None, params=None, stream=False, error_message="Error in GET Request : "):
         """
         Static method to call requests to get response using GET calls
         :param headers: Headers for get call
@@ -42,6 +42,7 @@ class HTTPRequests(object):
         logging.info(f"Request Stream (True/False)? : {stream}")
         try:
             response = self.session.get(url, headers=headers, params=params, stream=stream)
+            response.raise_for_status()
         except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
@@ -57,7 +58,7 @@ class HTTPRequests(object):
                 logging.critical("No response!!")
         return response
 
-    def call_put_requests(self, url, headers=None, params=None, data=None, error_message="Error in PUT Request"):
+    def call_put_requests(self, url, headers=None, params=None, data=None, error_message="Error in PUT Request : "):
         """
         Static method to call requests to get response using PUT calls
         :param data: Adding data for put call
@@ -74,6 +75,7 @@ class HTTPRequests(object):
         logging.info(f"Data for HTTP request : {data}")
         try:
             response = self.session.put(url, headers=headers, params=params, data=data)
+            response.raise_for_status()
         except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
@@ -87,7 +89,7 @@ class HTTPRequests(object):
         return response
 
     def call_post_requests(self, url, data=None, headers=None, params=None, files=None,
-                           error_message="Error in POST Request"):
+                           auth=None, error_message="Error in POST Request : "):
         """
         Static method to call requests to get response using POST calls
         :param data: data for post call
@@ -96,6 +98,7 @@ class HTTPRequests(object):
         :param url:  URL for post call
         :param params:  Parameters for the call
         :param error_message: Error message to be printed in case of exception
+        :param auth: Authorization for the call
         :return: Response from the requests call
         """
         response = None
@@ -105,7 +108,8 @@ class HTTPRequests(object):
         logging.info(f"Data for HTTP request : {data}")
         logging.info(f"Files for HTTP request : {files}")
         try:
-            response = self.session.post(url, headers=headers, params=params, files=files, data=data)
+            response = self.session.post(url, headers=headers, params=params, files=files, data=data, auth=auth)
+            response.raise_for_status()
         except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
@@ -118,7 +122,7 @@ class HTTPRequests(object):
                 logging.debug(f"Response Text : {response.text}")
         return response
 
-    def call_delete_requests(self, url, params=None, error_message="Error in DELETE Request"):
+    def call_delete_requests(self, url, params=None, error_message="Error in DELETE Request : "):
         """
         Static method to call requests to get response using GET calls
         :param url:  URL for get call
@@ -131,6 +135,7 @@ class HTTPRequests(object):
         logging.info(f"Parameters for HTTP request : {params}")
         try:
             response = self.session.delete(url, params=params)
+            response.raise_for_status()
         except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
@@ -143,7 +148,7 @@ class HTTPRequests(object):
                 logging.debug(f"Response Text : {response.text}")
         return response
 
-    def call_head_requests(self, url, error_message="Error in HEAD Request"):
+    def call_head_requests(self, url, error_message="Error in HEAD Request : "):
         """
         Static method to call requests to get response using HEAD calls
         :param url:  URL for get call
@@ -154,6 +159,7 @@ class HTTPRequests(object):
         logging.info(f"Url for HTTP request : {url}")
         try:
             response = self.session.head(url)
+            response.raise_for_status()
         except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
@@ -175,4 +181,4 @@ if __name__ == "__main__":
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
     logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
     logger = logging.getLogger(__name__)
-    HTTPRequests().call_get_requests('http://www.google.com')
+    HTTPRequests().call_get_requests('https://aniket-dev.s3.us-east-1.amazonaws.com/test.xml')
