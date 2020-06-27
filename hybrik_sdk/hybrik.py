@@ -18,7 +18,9 @@ except ModuleNotFoundError:
 
 
 class Hybrik(object):
-
+    """
+    Class for calling Hybrik APIs
+    """
     def __init__(self, **kwargs):
         self.url = None
         self.auth_key = None
@@ -26,11 +28,15 @@ class Hybrik(object):
         self.x_hybrik_compliance = None
         self.oapi_key = None
         self.oapi_secret = None
+        self.hybrik_session = HTTPRequests()
 
         self.__dict__.update(kwargs)
 
         self.token, self.expiration_time = self.api_token()
         logging.debug(f"Instance variables for Hybrik : {str(self.__dict__)}")
+
+    def __del__(self):
+        self.hybrik_session.__del__()
 
     def api_token(self):
         """
@@ -47,11 +53,15 @@ class Hybrik(object):
         }
         auth = HTTPBasicAuth(self.oapi_key, self.oapi_secret)
         url = f"{self.url}/v1/login"
-        response = HTTPRequests().call_post_requests(url=url, headers=headers, params=payload, auth=auth)
+        response = self.hybrik_session.call_post_requests(url=url, headers=headers, params=payload, auth=auth)
         response_text = Deserializer.json_deserializer(response.text)
         return response_text["token"], response_text["expiration_time"]
 
     class Decorator:
+        """
+        Decorator class for refreshing token
+        """
+
         @staticmethod
         def refresh_token(decorated):
             """
@@ -61,6 +71,13 @@ class Hybrik(object):
             """
 
             def wrapper(api, *args, **kwargs):
+                """
+                Wrapper method for refresh token
+                :param api: api
+                :param args: arguments of called method
+                :param kwargs: keyword arguments of called method
+                :return:
+                """
                 if datetime.utcnow() > datetime.strptime(api.expiration_time, '%Y-%m-%dT%H:%M:%S.%fZ'):
                     api.api_token()
                 return decorated(api, *args, **kwargs)
@@ -68,10 +85,15 @@ class Hybrik(object):
             return wrapper
 
     @Decorator.refresh_token
-    def send_job(self, job_name, payload, schema="hybrik", **kwargs):
+    def send_job(self, data, schema="hybrik", **kwargs):
+        """
+        This method send jobs to Hybrik API
+        :param data: json data to be sent
+        :param schema: schema of data
+        :param kwargs: extra keyword arguments
+        :return: response acquired from Hybrik
+        """
         payload = {
-            'job_name': job_name,
-            'payload': payload,
             'schema': schema
         }
         payload.update(kwargs)
@@ -82,8 +104,13 @@ class Hybrik(object):
         }
         auth = HTTPBasicAuth(self.oapi_key, self.oapi_secret)
         url = f"{self.url}/v1/jobs"
-        response = HTTPRequests().call_post_requests(url=url, headers=headers, params=payload, auth=auth)
+        response = self.hybrik_session.call_post_requests(url=url, headers=headers, params=payload, data=data,
+                                                          auth=auth)
         return response
+
+    @Decorator.refresh_token
+    def check_job(self, **kwargs):
+        pass
 
 
 if __name__ == "__main__":
@@ -96,4 +123,4 @@ if __name__ == "__main__":
            auth_secret="Amagi@560076",
            x_hybrik_compliance="20191031",
            oapi_key="QyNU5XYeV3C64PiuF08@accnt.oapi.hybrik",
-           oapi_secret="Pqs0ykiwkfSrXOXDCgbHGPhwwN7EeQ").send_job()
+           oapi_secret="Pqs0ykiwkfSrXOXDCgbHGPhwwN7EeQ").send_job(data=open('test.json').read())

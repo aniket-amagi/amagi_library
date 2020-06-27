@@ -52,11 +52,11 @@ class HTTPRequests(object):
                 logging.debug(f"Encoding : {response.encoding}")
                 logging.debug(f"Response Headers : {response.headers}")
                 logging.debug(f"Request Headers : {response.request.headers}")
-                if response.encoding:
+                if response.encoding or response.text:
                     logging.debug(f"Response Text : {response.text}")
             else:
                 logging.critical("No response!!")
-        return response
+            return response
 
     def call_put_requests(self, url, headers=None, params=None, data=None, error_message="Error in PUT Request : "):
         """
@@ -79,14 +79,17 @@ class HTTPRequests(object):
         except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
-            logging.debug(f"Status Code : {response.status_code}")
-            logging.debug(f"Total Time taken : {response.elapsed}")
-            logging.debug(f"Encoding : {response.encoding}")
-            logging.debug(f"Response Headers : {response.headers}")
-            logging.debug(f"Request Headers : {response.request.headers}")
-            if response.encoding:
-                logging.debug(f"Response Text : {response.text}")
-        return response
+            if response:
+                logging.debug(f"Status Code : {response.status_code}")
+                logging.debug(f"Total Time taken : {response.elapsed}")
+                logging.debug(f"Encoding : {response.encoding}")
+                logging.debug(f"Response Headers : {response.headers}")
+                logging.debug(f"Request Headers : {response.request.headers}")
+                if response.encoding or response.text:
+                    logging.debug(f"Response Text : {response.text}")
+            else:
+                logging.critical("No response!!")
+            return response
 
     def call_post_requests(self, url, data=None, headers=None, params=None, files=None,
                            auth=None, error_message="Error in POST Request : "):
@@ -107,20 +110,24 @@ class HTTPRequests(object):
         logging.info(f"Headers for HTTP request : {headers}")
         logging.info(f"Data for HTTP request : {data}")
         logging.info(f"Files for HTTP request : {files}")
+        logging.info(f"Auth for HTTP request : {auth}")
         try:
             response = self.session.post(url, headers=headers, params=params, files=files, data=data, auth=auth)
             response.raise_for_status()
         except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
-            logging.debug(f"Status Code : {response.status_code}")
-            logging.debug(f"Total Time taken : {response.elapsed}")
-            logging.debug(f"Encoding : {response.encoding}")
-            logging.debug(f"Response Headers : {response.headers}")
-            logging.debug(f"Request Headers : {response.request.headers}")
-            if response.encoding:
-                logging.debug(f"Response Text : {response.text}")
-        return response
+            if response:
+                logging.debug(f"Status Code : {response.status_code}")
+                logging.debug(f"Total Time taken : {response.elapsed}")
+                logging.debug(f"Encoding : {response.encoding}")
+                logging.debug(f"Response Headers : {response.headers}")
+                logging.debug(f"Request Headers : {response.request.headers}")
+                if response.encoding or response.text:
+                    logging.debug(f"Response Text : {response.text}")
+            else:
+                logging.critical("No response!!")
+            return response
 
     def call_delete_requests(self, url, params=None, error_message="Error in DELETE Request : "):
         """
@@ -139,14 +146,17 @@ class HTTPRequests(object):
         except requests.exceptions.RequestException as error:
             logging.error(error_message + str(error))
         finally:
-            logging.debug(f"Status Code : {response.status_code}")
-            logging.debug(f"Total Time taken : {response.elapsed}")
-            logging.debug(f"Encoding : {response.encoding}")
-            logging.debug(f"Response Headers : {response.headers}")
-            logging.debug(f"Request Headers : {response.request.headers}")
-            if response.encoding:
-                logging.debug(f"Response Text : {response.text}")
-        return response
+            if response:
+                logging.debug(f"Status Code : {response.status_code}")
+                logging.debug(f"Total Time taken : {response.elapsed}")
+                logging.debug(f"Encoding : {response.encoding}")
+                logging.debug(f"Response Headers : {response.headers}")
+                logging.debug(f"Request Headers : {response.request.headers}")
+                if response.encoding or response.text:
+                    logging.debug(f"Response Text : {response.text}")
+            else:
+                logging.critical("No response!!")
+            return response
 
     def call_head_requests(self, url, error_message="Error in HEAD Request : "):
         """
@@ -169,11 +179,11 @@ class HTTPRequests(object):
                 logging.debug(f"Encoding : {response.encoding}")
                 logging.debug(f"Response Headers : {response.headers}")
                 logging.debug(f"Request Headers : {response.request.headers}")
-                if response.encoding:
+                if response.encoding or response.text:
                     logging.debug(f"Response Text : {response.text}")
             else:
                 logging.critical("No response!!")
-        return response
+            return response
 
 
 if __name__ == "__main__":
