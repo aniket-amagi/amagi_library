@@ -235,13 +235,10 @@ class S3DeleteObject(object):
         # S3 Client instance to use
         self.s3_instance = Client(aws_details=self.aws_details).return_client(service_name='s3')
 
-        # Object dictionary
-        self.object_dict = None
-
         logging.debug("Instance variables for S3DeleteObject : " + str(self.__dict__))
 
     @staticmethod
-    def __add_details_to_object_dict(response):
+    def aws_api_response_handler(response):
         """
         This method recursively add data into object Dictionary
         :param response: list_objects_response from boto3 s3 client
@@ -260,17 +257,13 @@ class S3DeleteObject(object):
         self.s3_details = kwargs["s3_details"]
 
         try:
-            self.object_dict = dict()
-
             # Required parameter to call list_objects_v2
-            S3DeleteObject.__add_details_to_object_dict(
+            S3DeleteObject.aws_api_response_handler(
                 self.s3_instance.delete_object(Bucket=self.s3_details["bucket_name"],
-                                               Key=kwargs["Key"]))
+                                               Key=kwargs["object_path"]))
         except BaseException:
             logging.error("Uncaught exception in s3.py " + traceback.format_exc())
             raise BaseException("Problem in s3.py")
-        finally:
-            return self.object_dict
 
 
 class MoveObjectFromS3ToS3(object):
