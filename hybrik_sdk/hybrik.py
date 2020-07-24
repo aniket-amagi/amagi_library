@@ -8,19 +8,24 @@ from datetime import datetime
 
 from requests.auth import HTTPBasicAuth
 
-from amagi_library.helper.deserializer import Deserializer
-
 try:
     from amagi_library.helper.http_requests import HTTPRequests
 except ModuleNotFoundError:
     logging.info("Module called internally")
     from helper.http_requests import HTTPRequests
 
+try:
+    from amagi_library.helper.deserializer import Deserializer
+except ModuleNotFoundError:
+    logging.info("Module called internally")
+    from helper.deserializer import Deserializer
+
 
 class Hybrik(object):
     """
     Class for calling Hybrik APIs
     """
+
     def __init__(self, **kwargs):
         self.url = None
         self.auth_key = None

@@ -3,4 +3,4 @@
 """
 Init file for Helper scripts
 """
-__all__ = ["amazon_signing", "config_hash", "deserializer", "hash_calculator", "http_requests"]
+__all__ = ["amazon_signing", "config_hash", "deserializer", "hash_calculator", "http_requests", "k8s_secret_config"]

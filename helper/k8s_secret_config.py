@@ -3,13 +3,23 @@ import logging
 import os
 import traceback
 
-from amagi_library.boto3_helper.client import Client
-from amagi_library.boto3_helper.s3 import DisplayS3Object
+try:
+    from amagi_library.boto3_helper.client import Client
+except ModuleNotFoundError:
+    logging.info("Module called internally")
+    from boto3_helper.client import Client
+try:
+    from amagi_library.boto3_helper.s3 import DisplayS3Object
+except ModuleNotFoundError:
+    logging.info("Module called internally")
+    from boto3_helper.s3 import DisplayS3Object
+
 
 class K8SSecretConfig(object):
     """
         Retrieves configuration from S3 using AWS creds from K8S secrets available as env variable
     """
+
     @staticmethod
     def aws_api_response_handler(response):
         """
@@ -29,14 +39,16 @@ class K8SSecretConfig(object):
         """
         self.s3_details = kwargs["s3_details"]
         aws_details_str = os.environ['AWS_DETAILS'] if "AWS_DETAILS" in os.environ else None
-        if aws_details_str is None:
+        if not aws_details_str:
             return None
+        aws_details_obj = None
         try:
             aws_details_obj = json.loads(aws_details_str)
             obj = DisplayS3Object(aws_details=aws_details_obj)
-            data = obj.object_content(s3_details=kwargs['s3_details'],object_path=kwargs['s3_details']['object_path'])
-            if data is not None:
+            data = obj.object_content(s3_details=kwargs['s3_details'], object_path=kwargs['s3_details']['object_path'])
+            if data:
                 return json.loads(data)
         except BaseException:
             logging.error("Uncaught exception in secret_config.py " + traceback.format_exc())
-            raise BaseException("Problem in secret_config.py" + obj.aws_details)
+        finally:
+            raise BaseException("Problem in secret_config.py" + aws_details_obj)
