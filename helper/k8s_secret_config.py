@@ -50,5 +50,3 @@ class K8SSecretConfig(object):
                 return json.loads(data)
         except BaseException:
             logging.error("Uncaught exception in secret_config.py " + traceback.format_exc())
-        finally:
-            raise BaseException("Problem in secret_config.py" + aws_details_obj)
