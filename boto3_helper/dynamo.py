@@ -137,6 +137,38 @@ class DynamoAccessor(object):
 
         return response
 
+    def update_item(self, table_name, pk_name, pk_value, col_dict):
+        """
+        This method is to update dyanmo db table
+        :param table_name: table_name
+        :param pk_name: primary_key
+        :param pk_value: primary_value
+        :param col_dict: column_dict ex: {'asset_id' : {'short_key':'a', 'new_value' : 123}}
+        :return:
+        """
+        response = None
+        try:
+            table = self.dynamo_db_resource.Table(table_name)
+
+            expression_attribute_values = dict()
+            update_expression = "set"
+
+            for key, value in col_dict:
+                update_expression += f" {key} = {value['short_key']},"
+                expression_attribute_values.update({
+                    value['short_key']: value['new_value']
+                })
+            update_expression.rstrip(',')
+
+            response = table.update_item(Key={pk_name: pk_value},
+                                         UpdateExpression=update_expression,
+                                         ExpressionAttributeValues=expression_attribute_values,
+                                         ReturnValues="UPDATED_NEW")
+        except BaseException:
+            logging.error(f"ERROR occurred while updating item : {traceback.format_exc()}")
+        finally:
+            return response
+
     def delete_item(self, table_name, pk_name, pk_value):
         """
         Delete an item (row) in table from its primary key.
