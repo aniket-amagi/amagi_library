@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # coding= utf-8
 """
-This scripts creates an S3 Client Instance
+This scripts provides wrapper over AWS client
 """
 import logging
 import traceback
@@ -17,18 +17,19 @@ except ModuleNotFoundError:
 
 class Client(object):
     """
-        This Class handles creation s3 client
+        This Class handles creation of AWS client
     """
 
     def __init__(self, **kwargs):
         self.aws_details = None
         self.__dict__.update(kwargs)
 
-        logging.debug("Instance variables for s3Client : " + str(self.__dict__))
+        logging.debug(f"Instance variables for Client : {self.__dict__}")
 
     def return_client(self, service_name):
         """
-        This method creates s3 clients
+        This method creates AWS clients
+        :param service_name: Service Name for client
         """
         client = None
 
@@ -61,7 +62,7 @@ class Client(object):
                 client = boto3.client(service_name)
 
         except BaseException:
-            logging.error("Uncaught exception in client.py: " + traceback.format_exc())
+            logging.error(f"Uncaught exception in client.py : {traceback.format_exc()}")
             raise BaseException("Problem in client.py")
         finally:
             return client

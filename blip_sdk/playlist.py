@@ -30,7 +30,7 @@ class Playlist(object):
         }
         self.http_requests_instance = HTTPRequests()
 
-        logging.debug("Instance variables for Playlist : " + str(self.__dict__))
+        logging.debug(f"Instance variables for Playlist : {self.__dict__}")
 
     def __del__(self):
         # Removing HTTP request session
@@ -43,7 +43,7 @@ class Playlist(object):
         """
 
         url = f"https://{self.customer}.amagi.tv/v1/api/playlist"
-        logging.info("Base Playlist API url : " + url)
+        logging.info(f"Base Playlist API url : {url}")
         kwargs.update(self.default_payload)
         return self.http_requests_instance.call_get_requests(url=url, params=kwargs,
                                                              error_message="Error occurred when trying to "
@@ -57,7 +57,7 @@ class Playlist(object):
         """
 
         url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}/missing"
-        logging.info("Missing list url invoked to get details: " + url)
+        logging.info(f"Missing list url invoked to get details : {url}")
         kwargs.update(self.default_payload)
         return self.http_requests_instance.call_get_requests(url=url, params=kwargs,
                                                              error_message="Error occurred when "
@@ -72,7 +72,7 @@ class Playlist(object):
         """
 
         url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}/assets.json"
-        logging.info("Asset Status url invoked to get details: " + url)
+        logging.info(f"Asset Status url invoked to get details : {url}")
         kwargs.update(self.default_payload)
         return self.http_requests_instance.call_get_requests(url=url, params=kwargs,
                                                              error_message="Error occurred when trying to "
@@ -88,7 +88,7 @@ class Playlist(object):
 
         if "feed_id" in kwargs:
             url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}.json"
-            logging.info("Playlist Details url invoked to get details: " + url)
+            logging.info(f"Playlist Details url invoked to get details : {url}")
             kwargs.update(self.default_payload)
             return self.http_requests_instance.call_get_requests(url=url, params=kwargs,
                                                                  error_message="Error occurred when trying to "

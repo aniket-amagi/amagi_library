@@ -30,7 +30,7 @@ class Segments(object):
         }
         self.http_requests_instance = HTTPRequests()
 
-        logging.debug("Instance variables for Playlist : " + str(self.__dict__))
+        logging.debug(f"Instance variables for Playlist : {self.__dict__}")
 
     def __del__(self):
         # Removing HTTP request session
@@ -44,7 +44,7 @@ class Segments(object):
         """
         if media_id and ("feed_id" and "duration") in kwargs:
             url = f"https://{self.customer}.amagi.tv/v1/api/media/{media_id}/segments.json"
-            logging.info("POST url invoked to put segment details: " + url)
+            logging.info(f"POST url invoked to put segment details : {url}")
             kwargs.update(self.default_payload)
             return self.http_requests_instance.call_post_requests(url=url, params=kwargs,
                                                                   error_message="Error occurred when trying "

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # coding= utf-8
 """
-This scripts actually submit batch jobs
+This scripts provide wrapper over AWS Batch operations
 """
 import logging
 import traceback
@@ -25,24 +25,24 @@ class SubmitBatchJob(object):
         self.__dict__.update(kwargs)
 
         self.batch_instance = Client(aws_details=self.aws_details).return_client(service_name="batch")
-        logging.debug("Instance variables for submitBatchJob : " + str(self.__dict__))
+        logging.debug(f"Instance variables for submitBatchJob : {self.__dict__}")
 
     def submit_job(self, **kwargs):
         """
-        This method is scrub of from old project to submit batch jobs without MAPSOR API
-        :param kwargs: This parameter contains information from environemnt
+        This method is scrub of from old project to submit batch jobs without mapsor API
+        :param kwargs: This parameter contains information from environment
         :return: submits a batch job
         """
 
-        logging.info("Arguments for submit job " + str(kwargs))
+        logging.info(f"Arguments for submit job: {kwargs}")
 
         response = None
         try:
 
             response = self.batch_instance.submit_job(
                 jobName=kwargs["job_details"]["job_name"],
-                jobQueue=kwargs["job_details"]['job_queue'],
-                jobDefinition=kwargs["job_details"]['job_definition'],
+                jobQueue=kwargs["job_details"]["job_queue"],
+                jobDefinition=kwargs["job_details"]["job_definition"],
                 containerOverrides={
                     "vcpus": kwargs["job_details"]["vcpus"],
                     "memory": kwargs["job_details"]["memory"],
@@ -54,10 +54,10 @@ class SubmitBatchJob(object):
             )
 
         except BaseException:
-            logging.error("Uncaught exception in batch.py: " + traceback.format_exc())
+            logging.error(f"Uncaught exception in batch.py : {traceback.format_exc()}")
             raise BaseException("Problem in batch.py")
         finally:
-            logging.info("Batch Job submission response: {0}".format(response))
+            logging.info(f"Batch Job submission response: {response}")
 
 
 if __name__ == "__main__":

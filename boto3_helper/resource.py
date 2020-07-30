@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # coding= utf-8
 """
-This scripts creates a Dyanamo DB resource instance
+This scripts provides wrapper over AWS resource
 """
 import logging
 import traceback
@@ -24,11 +24,11 @@ class Resource(object):
         self.aws_details = None
         self.__dict__.update(kwargs)
 
-        logging.debug("Instance variables for Resource : " + str(self.__dict__))
+        logging.debug(f"Instance variables for Resource : {self.__dict__}")
 
     def return_resource(self, service_name):
         """
-        This method creates dyanamodb resource
+        This method creates AWS resource
         """
 
         resource = None
@@ -62,7 +62,7 @@ class Resource(object):
                 resource = boto3.Session().resource(service_name)
 
         except BaseException:
-            logging.error("Uncaught exception in resource.py: " + traceback.format_exc())
+            logging.error(f"Uncaught exception in resource.py: {traceback.format_exc()}")
             raise BaseException("Problem in resource.py")
 
         finally:

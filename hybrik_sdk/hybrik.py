@@ -38,7 +38,7 @@ class Hybrik(object):
         self.__dict__.update(kwargs)
 
         self.token, self.expiration_time = self.api_token()
-        logging.debug(f"Instance variables for Hybrik : {str(self.__dict__)}")
+        logging.debug(f"Instance variables for Hybrik : {self.__dict__}")
 
     def __del__(self):
         self.hybrik_session.__del__()
@@ -49,12 +49,12 @@ class Hybrik(object):
         :return:
         """
         payload = {
-            'auth_key': self.auth_key,
-            'auth_secret': self.auth_secret
+            "auth_key": self.auth_key,
+            "auth_secret": self.auth_secret
         }
         headers = {
-            'Content-Type': 'application/json',
-            'X-Hybrik-Compliance': self.x_hybrik_compliance,
+            "Content-Type": "application/json",
+            "X-Hybrik-Compliance": self.x_hybrik_compliance,
         }
         auth = HTTPBasicAuth(self.oapi_key, self.oapi_secret)
         url = f"{self.url}/v1/login"
@@ -83,7 +83,7 @@ class Hybrik(object):
                 :param kwargs: keyword arguments of called method
                 :return:
                 """
-                if datetime.utcnow() > datetime.strptime(api.expiration_time, '%Y-%m-%dT%H:%M:%S.%fZ'):
+                if datetime.utcnow() > datetime.strptime(api.expiration_time, "%Y-%m-%dT%H:%M:%S.%fZ"):
                     api.api_token()
                 return decorated(api, *args, **kwargs)
 
@@ -99,13 +99,13 @@ class Hybrik(object):
         :return: response acquired from Hybrik
         """
         payload = {
-            'schema': schema
+            "schema": schema
         }
         payload.update(kwargs)
         headers = {
-            'Content-Type': 'application/json',
-            'X-Hybrik-Compliance': self.x_hybrik_compliance,
-            'X-Hybrik-Sapiauth': self.token
+            "Content-Type": "application/json",
+            "X-Hybrik-Compliance": self.x_hybrik_compliance,
+            "X-Hybrik-Sapiauth": self.token
         }
         auth = HTTPBasicAuth(self.oapi_key, self.oapi_secret)
         url = f"{self.url}/v1/jobs"
@@ -124,8 +124,8 @@ if __name__ == "__main__":
     logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
     logger = logging.getLogger(__name__)
     Hybrik(url="https://api-demo.hybrik.com",
-           auth_key="arpitm@amagi.com",
-           auth_secret="Amagi@560076",
+           auth_key="",
+           auth_secret="",
            x_hybrik_compliance="20191031",
-           oapi_key="QyNU5XYeV3C64PiuF08@accnt.oapi.hybrik",
-           oapi_secret="Pqs0ykiwkfSrXOXDCgbHGPhwwN7EeQ").send_job(data=open('test.json').read())
+           oapi_key="",
+           oapi_secret="").send_job(data=open("test.json").read())

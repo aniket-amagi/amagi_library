@@ -1,3 +1,8 @@
+#!/usr/bin/python3
+# coding= utf-8
+"""
+This is a helper script for reading application_configuration
+"""
 import json
 import logging
 

@@ -3,11 +3,13 @@
 """
 This is a helper script to deserialize data
 """
+import csv
 import json
 import logging
 import traceback
 from json import JSONDecodeError
 
+from StringIO import StringIO
 from idna import unicode
 
 
@@ -32,9 +34,25 @@ class Deserializer(object):
                 encoding_handled_text = text
             data_dict = json.loads(encoding_handled_text)
         except JSONDecodeError:
-            logging.error("Problem decoding Json : " + traceback.format_exc())
+            logging.error(f"Problem decoding Json : {traceback.format_exc()}")
         except AttributeError:
             logging.error("Text provided is empty")
+        finally:
+            return data_dict
+
+    @staticmethod
+    def csv_deserializer(text, encoding='utf-8'):
+        data_dict = None
+        try:
+            if not encoding == 'utf-8':
+                encoding_handled_text = unicode(text.encode(encoding), 'utf-8')
+            else:
+                encoding_handled_text = text
+            dialect = csv.Sniffer().sniff(encoding_handled_text)
+            data_dict = csv.DictReader(StringIO(encoding_handled_text), delimiter=dialect.delimiter,
+                                       quotechar=dialect.quotechar)
+        except BaseException:
+            logging.error(f"Problem decoding csv : {traceback.format_exc()}")
         finally:
             return data_dict
 

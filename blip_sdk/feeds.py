@@ -29,7 +29,7 @@ class Feeds(object):
         }
 
         self.http_requests_instance = HTTPRequests()
-        logging.debug("Instance variables for Feeds : " + str(self.__dict__))
+        logging.debug(f"Instance variables for Feeds : {self.__dict__}")
 
     def __del__(self):
         # Removing HTTP request session
@@ -41,14 +41,19 @@ class Feeds(object):
         :return: response object from Blip
         """
         url = f"https://{self.customer}.amagi.tv/v1/api/feeds"
-        logging.info("Feed url invoked to get details : " + url)
+        logging.info(f"Feed url invoked to get details : {url}")
         return self.http_requests_instance.call_get_requests(url=url, params=self.default_payload,
                                                              error_message="Error occurred when trying "
                                                                            "to access Blip for Feed : ")
 
 
 if __name__ == "__main__":
-    from helper.deserializer import Deserializer
+    try:
+        from amagi_library.helper.deserializer import Deserializer
+    except ModuleNotFoundError:
+        logging.info("Module called internally")
+        from helper.deserializer import Deserializer
+
     from pprint import pprint
 
     # LOGGING #

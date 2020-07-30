@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 # coding= utf-8
 """
-This scripts has method which help to access Dynamo DB
+This scripts provides wrapper over Dynamo DB
 Xref : https://martinapugliese.github.io/interacting-with-a-dynamodb-via-boto3/
 """
 import logging
+import traceback
 
 from boto3.dynamodb.conditions import Key
 
@@ -24,9 +25,75 @@ class DynamoAccessor(object):
         self.aws_details = None
         self.__dict__.update(kwargs)
 
-        self.dynamo_db_resource = Resource(aws_details=self.aws_details).return_resource(service_name='dynamodb')
+        self.dynamo_db_resource = Resource(aws_details=self.aws_details).return_resource(service_name="dynamodb")
 
-        logging.debug("Instance variables for DynamoResource : " + str(self.__dict__))
+        logging.debug(f"Instance variables for DynamoResource : {self.__dict__}")
+
+    def create_table(self, table_name, partition_key, partition_key_type="S", sort_key=None, sort_key_type="S",
+                     other_key_list=None):
+        """
+        Create Table in Dynamo DB
+        :param other_key_list: Other Key list (default : None)
+        :param sort_key_type: Sort Key type (default : S)
+        :param sort_key: Sort Key (default : None)
+        :param partition_key_type: Partition Key type (default : S)
+        :param partition_key: Partition Key
+        :param table_name Table Name
+        """
+        table = None
+        try:
+            # Create the DynamoDB table.
+            key_schema = [
+                {
+                    "AttributeName": partition_key,
+                    "KeyType": "HASH"
+                }
+            ]
+            attribute_definitions = [
+                {
+                    "AttributeName": partition_key,
+                    "AttributeType": partition_key_type
+                }
+            ]
+            if sort_key:
+                key_schema.append({
+                    "AttributeName": sort_key,
+                    "KeyType": "RANGE"
+                })
+                attribute_definitions.append({
+                    "AttributeName": sort_key,
+                    "AttributeType": sort_key_type
+                })
+            if other_key_list:
+                for item in other_key_list:
+                    attribute_definitions.append({
+                        "AttributeName": item["key"],
+                        "AttributeType": item["key_type"]
+                    })
+
+            table = self.dynamo_db_resource.create_table(
+                TableName=table_name,
+                KeySchema=key_schema,
+                AttributeDefinitions=attribute_definitions,
+                BillingMode="PAY_PER_REQUEST"
+            )
+            # Wait until the table exists.
+            table.meta.client.get_waiter("table_exists").wait(TableName=table_name)
+
+        except BaseException:
+            logging.error(f"ERROR occurred while creating table {table_name} : {traceback.format_exc()}")
+        finally:
+            return table
+
+    def delete_table(self, table_name):
+        """
+        Delete table from Dynamo DB
+        :param table_name: Table Name
+        """
+        try:
+            self.dynamo_db_resource.delete_table(TableName=table_name)
+        except BaseException:
+            logging.error(f"ERROR occurred while deleting table {table_name} : {traceback.format_exc()}")
 
     def get_table_metadata(self, table_name):
         """
@@ -34,14 +101,14 @@ class DynamoAccessor(object):
         """
         table = self.dynamo_db_resource.Table(table_name)
 
-        logging.debug("Response from get_table_metadata : " + str(table))
+        logging.debug(f"Response from get_table_metadata : {table}")
 
         return {
-            'num_items': table.item_count,
-            'primary_key_name': table.key_schema[0],
-            'status': table.table_status,
-            'bytes_size': table.table_size_bytes,
-            'global_secondary_indices': table.global_secondary_indexes
+            "num_items": table.item_count,
+            "primary_key_name": table.key_schema[0],
+            "status": table.table_status,
+            "bytes_size": table.table_size_bytes,
+            "global_secondary_indices": table.global_secondary_indexes
         }
 
     def read_table_item(self, table_name, pk_name, pk_value):
@@ -127,11 +194,11 @@ class DynamoAccessor(object):
         else:
             response = table.scan()
 
-        items = response['Items']
+        items = response["Items"]
         while True:
-            if response.get('LastEvaluatedKey'):
-                response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
-                items += response['Items']
+            if response.get("LastEvaluatedKey"):
+                response = table.scan(ExclusiveStartKey=response["LastEvaluatedKey"])
+                items += response["Items"]
             else:
                 break
 

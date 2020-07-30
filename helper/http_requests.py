@@ -191,4 +191,4 @@ if __name__ == "__main__":
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
     logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
     logger = logging.getLogger(__name__)
-    HTTPRequests().call_get_requests('https://aniket-dev.s3.us-east-1.amazonaws.com/test.xml')
+    HTTPRequests().call_get_requests("https://aniket-dev.s3.us-east-1.amazonaws.com/test.xml")

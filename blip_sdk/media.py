@@ -30,7 +30,7 @@ class Media(object):
         }
         self.http_requests_instance = HTTPRequests()
 
-        logging.debug("Instance variables for Media : " + str(self.__dict__))
+        logging.debug(f"Instance variables for Media : {self.__dict__}")
 
     def __del__(self):
         # Removing HTTP request session
@@ -43,7 +43,7 @@ class Media(object):
         """
         if "account_id" or "feed_id" in kwargs:
             url = f"https://{self.customer}.amagi.tv/v1/api/media"
-            logging.info("GET url invoked to get details: " + url)
+            logging.info(f"GET url invoked to get details : {url}")
             kwargs.update(self.default_payload)
             return self.http_requests_instance.call_get_requests(url=url, params=kwargs,
                                                                  error_message="Error occurred when trying to "
@@ -60,7 +60,7 @@ class Media(object):
         """
         if "account_id" or "feed_id" in kwargs and asset_id:
             url = f"https://{self.customer}.amagi.tv/v1/api/media/{asset_id}"
-            logging.info("GET url invoked to get details: " + url)
+            logging.info(f"GET url invoked to get details : {url}")
             kwargs.update(self.default_payload)
             return self.http_requests_instance.call_get_requests(url=url, params=kwargs,
                                                                  error_message="Error occurred when trying to "
@@ -78,10 +78,10 @@ class Media(object):
         """
         if media_id:
             url = f"https://{self.customer}.amagi.tv/v1/api/media/{media_id}.json"
-            logging.info("PUT url invoked to put details: " + url)
+            logging.info(f"PUT url invoked to put details : {url}")
             kwargs.update(self.default_payload)
             return self.http_requests_instance.call_put_requests(url=url, params=kwargs, data=data,
-                                                                 headers={'Content-Type': 'application/json'},
+                                                                 headers={"Content-Type": "application/json"},
                                                                  error_message="Error occurred when trying to "
                                                                                "access Blip for "
                                                                                "putting Asset Details : ")
@@ -97,7 +97,7 @@ class Media(object):
         """
         if "account_id" or "feed_id" in kwargs and files:
             url = f"https://{self.customer}.amagi.tv/v1/api/media/meta_upload.json"
-            logging.info("POST url invoked to get details: " + url)
+            logging.info(f"POST url invoked to get details : {url}")
             kwargs.update(self.default_payload)
             return self.http_requests_instance.call_post_requests(url=url, params=kwargs, files=files,
                                                                   error_message="Error occurred when trying to "
@@ -115,7 +115,7 @@ class Media(object):
         """
         if "account_id" or "feed_id" and "feeds" in kwargs:
             url = f"https://{self.customer}.amagi.tv/v1/api/media/{media_id}"
-            logging.info("DELETE url invoked to get details: " + url)
+            logging.info(f"DELETE url invoked to get details : {url}")
             kwargs.update(self.default_payload)
             return self.http_requests_instance.call_delete_requests(url=url, params=kwargs,
                                                                     error_message="Error occurred when trying to "
@@ -127,7 +127,11 @@ class Media(object):
 
 
 if __name__ == "__main__":
-    from helper.deserializer import Deserializer
+    try:
+        from amagi_library.helper.deserializer import Deserializer
+    except ModuleNotFoundError:
+        logging.info("Module called internally")
+        from helper.deserializer import Deserializer
     from pprint import pprint
 
     # LOGGING #
