@@ -57,6 +57,10 @@ class Resource(object):
                     resource = boto3.Session(aws_access_key_id=self.aws_details["access_key"],
                                              aws_secret_access_key=self.aws_details["secret_key"],
                                              region_name=self.aws_details["region_name"]).resource(service_name)
+
+                elif {"profile_name"}.issubset(set(self.aws_details.keys())):
+                    # Created normal clients in case of no ARN using profile name
+                    resource = boto3.Session(profile_name=self.aws_details["profile_name"]).resource(service_name)
             else:
                 # Create normal resource if no credentials are provided
                 resource = boto3.Session().resource(service_name)

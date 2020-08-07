@@ -7,9 +7,9 @@ import csv
 import json
 import logging
 import traceback
+from io import StringIO
 from json import JSONDecodeError
 
-from StringIO import StringIO
 from idna import unicode
 
 
