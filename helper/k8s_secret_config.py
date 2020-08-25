@@ -55,3 +55,21 @@ class K8SSecretConfig(object):
             logging.error(f"Uncaught exception in secret_config.py : {traceback.format_exc()}")
         finally:
             return data
+
+    @staticmethod
+    def read_raw_from_s3(**kwargs):
+        """
+        Driving method which will get contents of all the objects in s3
+        :return: Returns object dict containing details about s3
+        """
+        string_data = None
+        try:
+            aws_details_str = os.environ["AWS_DETAILS"] if "AWS_DETAILS" in os.environ else None
+            aws_details_obj = json.loads(aws_details_str)
+            string_data = DisplayS3Object(aws_details=aws_details_obj).object_content(s3_details=kwargs["s3_details"],
+                                                                                      object_path=kwargs["s3_details"]
+                                                                                      ["object_path"])
+        except BaseException:
+            logging.error(f"Uncaught exception in secret_config.py : {traceback.format_exc()}")
+        finally:
+            return string_data
