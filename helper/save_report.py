@@ -1,7 +1,8 @@
-from amagi_library.helper.workdir import WorkDirectory
-
 import os
 import uuid
+
+from amagi_library.helper.workdir import WorkDirectory
+
 
 class SaveReport(object):
 
@@ -9,9 +10,9 @@ class SaveReport(object):
         self.headers = headers
         self.fields = fields
 
-    def save_report(self, obj_list, format, file_path = None):
+    def save_report(self, obj_list, format, file_path=None):
         methods = {
-            "csv" : self.save_report_as_csv
+            "csv": self.save_report_as_csv
         }
         if format not in methods:
             raise Exception("{} format is not supported".format(format))
@@ -27,7 +28,7 @@ class SaveReport(object):
         if not file_path:
             work_dir = WorkDirectory(prefix="save_report").get_work_dir()
             file_path = os.path.join(work_dir, f"{uuid.uuid1()}.{format}")
-        
+
         with open(file_path, 'w') as file:
             header_text = None
             header_list = self.headers if self.headers else self.get_fields(obj_list)
@@ -46,7 +47,7 @@ class SaveReport(object):
                         row.append(item[field])
                     else:
                         row.append("NA")
-                converted_row = map(lambda cell : f"\"{cell}\"", row)
+                converted_row = map(lambda cell: f"\"{cell}\"", row)
                 row_text = ",".join(converted_row)
                 file.write(row_text)
                 file.write("\n")

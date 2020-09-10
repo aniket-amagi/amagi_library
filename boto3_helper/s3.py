@@ -285,14 +285,14 @@ class MoveObjectFromS3ToS3(object):
         """
         try:
             CopyObjectFromS3ToS3(source_aws_details=self.source_aws_details,
-                                 destination_aws_details=self.destination_aws_details).\
+                                 destination_aws_details=self.destination_aws_details). \
                 copy_from_source_to_destination_s3(
                 source_s3_details=kwargs["source_s3_details"],
                 object_original_path=kwargs["object_original_path"],
                 destination_s3_details=kwargs["destination_s3_details"],
                 object_destination_path=kwargs["object_destination_path"])
 
-            S3DeleteObject(aws_details=self.source_aws_details).\
+            S3DeleteObject(aws_details=self.source_aws_details). \
                 delete_from_s3(s3_details=kwargs["source_s3_details"],
                                Key=kwargs["object_original_path"])
         except BaseException:

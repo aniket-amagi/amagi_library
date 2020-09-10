@@ -28,5 +28,5 @@ def read_json(json_file):
 
 
 if __name__ == "__main__":
-    app_config = AppConfig("config/config.dev.json")
+    app_config = AppConfig("config/ammo.magnolia.config.json")
     print(json.dumps(app_config.get(), indent=4))

@@ -43,7 +43,7 @@ if __name__ == "__main__":
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
     logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
     logger = logging.getLogger(__name__)
-    with open("config.prod.json") as file:
+    with open("ammo.magnolia.config.prod.json") as file:
         config = json.load(file)
     encoded = encode_config(config)
     config_decoded = decode_config(encoded)

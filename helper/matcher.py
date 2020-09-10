@@ -1,28 +1,28 @@
 import re
-import types
 
 sample_rule = [
     {
-        "Type" : {
-            "match_type" : "exact",
-            "values" : ["",""],
-            "invert" : False
+        "Type": {
+            "match_type": "exact",
+            "values": ["", ""],
+            "invert": False
         },
-        "Asset Id" : {
-            "match_type" : "regex",
-            "patterns" : [],
-            "values" : ["",""],
-            "invert" : False
+        "Asset Id": {
+            "match_type": "regex",
+            "patterns": [],
+            "values": ["", ""],
+            "invert": False
         },
         "Time": {
-            "match_type" : "range",
-            "start" : "",
-            "end" : "",
-            "invert" : False
+            "match_type": "range",
+            "start": "",
+            "end": "",
+            "invert": False
         },
         "Owner": "Amagi"
     }
 ]
+
 
 class Matcher(object):
 
@@ -49,7 +49,8 @@ class Matcher(object):
                     pattern_matched = True
             matched = pattern_matched ^ rule[asset_key]['invert']
         elif rule[asset_key]['match_type'] == "range":
-            matched = (rule[asset_key]['start'] <= asset[asset_key] <= rule[asset_key]['end']) ^ rule[asset_key]['invert']
+            matched = (rule[asset_key]['start'] <= asset[asset_key] <= rule[asset_key]['end']) ^ rule[asset_key][
+                'invert']
         else:
             matched = False
         return matched
