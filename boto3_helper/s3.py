@@ -5,6 +5,7 @@ This scripts provides wrapper over AWS S3
 """
 import logging
 import traceback
+from pathlib import Path
 
 from boto3.s3.transfer import TransferConfig
 
@@ -297,6 +298,41 @@ class MoveObjectFromS3ToS3(object):
                                Key=kwargs["object_original_path"])
         except BaseException:
             logging.error(f"Uncaught exception in s3.py: {traceback.format_exc()}")
+            raise BaseException("Problem in s3.py")
+
+
+class CopyObjectFromS3toLocal(object):
+    """
+        This class provide interface to copy object from s3 to local machine
+        """
+
+    def __init__(self, **kwargs):
+        # Required variable to drive this Class, expected to be provided from parent Object
+        self.source_aws_details = None
+
+        self.__dict__.update(kwargs)
+
+        self.source_s3_client_instance = Client(aws_details=self.source_aws_details).return_client(service_name="s3")
+
+        logging.debug(f"Instance variables for CopyObjectFromS3 : {self.__dict__}")
+
+    def copy_from_s3_to_local(self, **kwargs):
+        """
+        This method downloads file from one s3 to local machine
+        """
+        try:
+            data = DisplayS3Object(aws_details=self.source_aws_details).object_content(s3_details=kwargs["s3_details"],
+                                                                                       object_path=kwargs["object_path"])
+
+            file_name = kwargs["object_path"].split('/')[-1]
+
+            # This will check if the local_path available or not, if not then create.
+            Path(kwargs["local_path"]).mkdir(parents=True, exist_ok=True)
+            with open(f"{kwargs['file_path']}/{file_name}", 'w') as output_file:
+                output_file.write(data)
+
+        except BaseException:
+            logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
             raise BaseException("Problem in s3.py")
 
 
