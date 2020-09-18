@@ -1,3 +1,5 @@
 idna
 boto3
 requests
+pillow
+smart_open[all]
