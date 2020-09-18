@@ -46,15 +46,16 @@ class Mapsor(object):
         payload_dict.update(kwargs)
         payload = json.dumps(payload_dict)
 
-        base_url = self.mapsor_details["mapsor_url"]
+        base_url = self.mapsor_details["url"]
         url = f"{base_url}/submit"
-        params = {"token": self.mapsor_details["mapsor_key"]}
+        params = {"token": self.mapsor_details["key"]}
         headers = {
             "Content-Type": "application/json",
             "Accept": "*/*",
         }
 
         response = self.http_requests_instance.call_post_requests(url, data=payload, headers=headers, params=params)
+        logging.info(f"Status Code from Mapsor :{response.status_code}")
         logging.info(f"Response from Mapsor : {response.text}")
 
     def submitted_job_status(self, job_id):
@@ -64,9 +65,9 @@ class Mapsor(object):
         :param job_id: job id
         """
 
-        base_url = self.mapsor_details["mapsor_url"]
+        base_url = self.mapsor_details["url"]
         url = f"{base_url}/status/{job_id}"
-        params = {"token": self.mapsor_details["mapsor_key"]}
+        params = {"token": self.mapsor_details["key"]}
         headers = {
             "Content-Type": "application/json",
             "Accept": "*/*",
@@ -82,9 +83,9 @@ class Mapsor(object):
         :param job_id: job id
         """
 
-        base_url = self.mapsor_details["mapsor_url"]
+        base_url = self.mapsor_details["url"]
         url = f"{base_url}/cancel/{job_id}"
-        params = {"token": self.mapsor_details["mapsor_key"]}
+        params = {"token": self.mapsor_details["key"]}
         headers = {
             "Content-Type": "application/json",
             "Accept": "*/*",
@@ -99,9 +100,9 @@ class Mapsor(object):
         xref: https://mapsor.amagi.tv/docs/#/paths/~1retry~1{id}/get
         :param job_id: job id
         """
-        base_url = self.mapsor_details["mapsor_url"]
+        base_url = self.mapsor_details["url"]
         url = f"{base_url}/retry/{job_id}"
-        params = {"token": self.mapsor_details["mapsor_key"]}
+        params = {"token": self.mapsor_details["key"]}
         headers = {
             "Content-Type": "application/json",
             "Accept": "*/*",
@@ -116,9 +117,9 @@ class Mapsor(object):
         xref: https://mapsor.amagi.tv/docs/#/paths/~1logs~1{id}/get
         :param job_id: job id
         """
-        base_url = self.mapsor_details["mapsor_url"]
+        base_url = self.mapsor_details["url"]
         url = f"{base_url}/logs/{job_id}"
-        params = {"token": self.mapsor_details["mapsor_key"]}
+        params = {"token": self.mapsor_details["key"]}
         headers = {
             "Content-Type": "application/json",
             "Accept": "*/*",

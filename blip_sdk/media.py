@@ -122,8 +122,25 @@ class Media(object):
                                                                                   "access Blip for "
                                                                                   "Deleting Asset : ")
         else:
-            logging.error("Either (account_id or feed_id and feeds is required to use this API")
+            logging.error("Either (account_id or feed_id) and feeds is required to use this API")
             return None
+
+    def get_all_media_types(self, **kwargs):
+        """
+        This method is to get all media types available in Blip
+        :param kwargs: keyword arguments
+        """
+        if "account_id" or "feed_id" in kwargs:
+            url = f"https://{self.customer}.amagi.tv/v1/api/types"
+            logging.info(f"GET url invoked to get details : {url}")
+            kwargs.update(self.default_payload)
+            return self.http_requests_instance.call_get_requests(url=url, params=kwargs,
+                                                                 error_message="Error occurred when trying to "
+                                                                               "access Blip for "
+                                                                               "Media Types: ")
+        else:
+            logging.error("Either account_id or feed_id is required to use this API")
+        return None
 
 
 if __name__ == "__main__":
