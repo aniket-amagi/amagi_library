@@ -41,7 +41,7 @@ class Mapsor(object):
 
             base_url = self.mapsor_details["url"]
             url = f"{base_url}/submit"
-            params = {"token": self.mapsor_details["key"]}
+            params = {"token": self.mapsor_details["token"]}
             headers = {
                 "Content-Type": "application/json",
                 "Accept": "*/*",
