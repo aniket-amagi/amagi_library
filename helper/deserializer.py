@@ -10,6 +10,7 @@ import traceback
 from io import StringIO
 from json import JSONDecodeError
 
+import yaml
 from idna import unicode
 
 
@@ -53,6 +54,20 @@ class Deserializer(object):
                                        quotechar=dialect.quotechar)
         except BaseException:
             logging.error(f"Problem decoding csv : {traceback.format_exc()}")
+        finally:
+            return data_dict
+
+    @staticmethod
+    def yaml_deserializer(text, encoding='utf-8'):
+        data_dict = None
+        try:
+            if not encoding == 'utf-8':
+                encoding_handled_text = unicode(text.encode(encoding), 'utf-8')
+            else:
+                encoding_handled_text = text
+            data_dict = yaml.load(encoding_handled_text)
+        except BaseException:
+            logging.error(f"Problem decoding yaml : {traceback.format_exc()}")
         finally:
             return data_dict
 
