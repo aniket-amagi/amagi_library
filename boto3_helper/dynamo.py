@@ -153,12 +153,14 @@ class DynamoAccessor(object):
             expression_attribute_values = dict()
             update_expression = "set"
 
-            for key, value in col_dict:
+            for key, value in col_dict.items():
                 update_expression += f" {key} = {value['short_key']},"
                 expression_attribute_values.update({
                     value['short_key']: value['new_value']
                 })
-            update_expression.rstrip(',')
+            update_expression = update_expression.rstrip(',')
+
+            logging.debug(f"Update Expression : {update_expression}")
 
             response = table.update_item(Key={pk_name: pk_value},
                                          UpdateExpression=update_expression,
