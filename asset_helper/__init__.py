@@ -3,4 +3,4 @@
 """
 Init file for experimental
 """
-__all__ = ["media_details"]
+__all__ = ["image_parser"]

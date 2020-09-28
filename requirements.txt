@@ -3,3 +3,6 @@ boto3
 requests
 pillow
 smart_open[all]
+
+# For help in IDE to develop over boto3
+boto3-stubs

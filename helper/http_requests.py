@@ -52,6 +52,8 @@ class HTTPRequests(object):
                 logging.debug(f"Encoding : {response.encoding}")
                 logging.debug(f"Response Headers : {response.headers}")
                 logging.debug(f"Request Headers : {response.request.headers}")
+                if not stream:
+                    logging.debug(f"Size of Response : {len(response.content)}")
                 if response.encoding or response.text:
                     logging.debug(f"Response Text : {response.text}")
             else:
@@ -85,6 +87,7 @@ class HTTPRequests(object):
                 logging.debug(f"Encoding : {response.encoding}")
                 logging.debug(f"Response Headers : {response.headers}")
                 logging.debug(f"Request Headers : {response.request.headers}")
+                logging.debug(f"Size of Response : {len(response.content)}")
                 if response.encoding or response.text:
                     logging.debug(f"Response Text : {response.text}")
             else:
@@ -123,6 +126,7 @@ class HTTPRequests(object):
                 logging.debug(f"Encoding : {response.encoding}")
                 logging.debug(f"Response Headers : {response.headers}")
                 logging.debug(f"Request Headers : {response.request.headers}")
+                logging.debug(f"Size of response : {len(response.content)}")
                 if response.encoding or response.text:
                     logging.debug(f"Response Text : {response.text}")
             else:
@@ -152,6 +156,7 @@ class HTTPRequests(object):
                 logging.debug(f"Encoding : {response.encoding}")
                 logging.debug(f"Response Headers : {response.headers}")
                 logging.debug(f"Request Headers : {response.request.headers}")
+                logging.debug(f"Size of response : {len(response.content)}")
                 if response.encoding or response.text:
                     logging.debug(f"Response Text : {response.text}")
             else:
@@ -179,6 +184,7 @@ class HTTPRequests(object):
                 logging.debug(f"Encoding : {response.encoding}")
                 logging.debug(f"Response Headers : {response.headers}")
                 logging.debug(f"Request Headers : {response.request.headers}")
+                logging.debug(f"Size of response : {len(response.content)}")
                 if response.encoding or response.text:
                     logging.debug(f"Response Text : {response.text}")
             else:
