@@ -106,12 +106,12 @@ class DisplayS3Object(object):
         This method downloads file from local machine to s3 and then prints it
         """
         try:
-            object_address = f"s3://{kwargs['source_s3_details']['bucket_name']}/" \
-                             f"{kwargs['object_original_path']}"
+            object_address = f"s3://{kwargs['s3_details']['bucket_name']}/" \
+                             f"{kwargs['object_path']}"
 
             # The return data is in binary
             return open(object_address, 'rb',
-                        transport_params={'session': self.session_instance}).readlines()
+                        transport_params={'session': self.session_instance}).read()
 
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
