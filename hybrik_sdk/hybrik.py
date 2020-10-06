@@ -10,14 +10,10 @@ from requests.auth import HTTPBasicAuth
 
 try:
     from amagi_library.helper.http_requests import HTTPRequests
-except ModuleNotFoundError:
-    logging.info("Module called internally")
-    from helper.http_requests import HTTPRequests
-
-try:
     from amagi_library.helper.deserializer import Deserializer
 except ModuleNotFoundError:
     logging.info("Module called internally")
+    from helper.http_requests import HTTPRequests
     from helper.deserializer import Deserializer
 
 

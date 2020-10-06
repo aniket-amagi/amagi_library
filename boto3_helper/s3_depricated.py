@@ -6,15 +6,12 @@ This scripts provides wrapper over AWS S3
 import logging
 import traceback
 
-from smart_open import open
+from boto3.s3.transfer import TransferConfig
 
 try:
-    from amagi_library.boto3_helper.session import Session
     from amagi_library.boto3_helper.client import Client
-
 except ModuleNotFoundError:
     logging.info("Module called internally")
-    from boto3_helper.session import Session
     from boto3_helper.client import Client
 
 
@@ -30,8 +27,9 @@ class CopyObjectFromS3ToS3(object):
 
         self.__dict__.update(kwargs)
 
-        self.source_session_instance = Session(aws_details=self.source_aws_details).return_session()
-        self.destination_session_instance = Session(aws_details=self.destination_aws_details).return_session()
+        self.source_s3_client_instance = Client(aws_details=self.source_aws_details).return_client(service_name="s3")
+        self.destination_s3_client_instance = Client(aws_details=self.destination_aws_details).return_client(
+            service_name="s3")
 
         logging.debug(f"Instance variables for CopyObjectFromS3ToS3 : {self.__dict__}")
 
@@ -40,17 +38,17 @@ class CopyObjectFromS3ToS3(object):
         This method downloads file from one s3 to another s3
         """
         try:
-            object_original_address = f"s3://{kwargs['source_s3_details']['bucket_name']}/" \
-                                      f"{kwargs['object_original_path']}"
-            object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
-                                         f"{kwargs['object_destination_path']}"
-            with open(object_original_address, 'rb',
-                      transport_params={'session': self.source_session_instance}) as f_read:
-                with open(object_destination_address, 'wb',
-                          transport_params={'session': self.destination_session_instance}) as f_write:
-                    for data_line in f_read:
-                        f_write.write(data_line)
+            copy_source = self.source_s3_client_instance.get_object(
+                Bucket=kwargs["source_s3_details"]["bucket_name"],
+                Key=kwargs["object_original_path"]
+            )
 
+            # chunk of 250 Mb
+            config = TransferConfig(multipart_threshold=1024 * 25, multipart_chunksize=1024 * 25)
+
+            self.destination_s3_client_instance.upload_fileobj(copy_source["Body"],
+                                                               kwargs["destination_s3_details"]["bucket_name"],
+                                                               kwargs["object_destination_path"], Config=config)
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
             raise BaseException("Problem in s3.py")
@@ -66,7 +64,8 @@ class CopyToS3(object):
         self.destination_aws_details = None
         self.__dict__.update(kwargs)
 
-        self.destination_session_instance = Session(aws_details=self.destination_aws_details).return_session()
+        self.destination_s3_client_instance = Client(aws_details=self.destination_aws_details).return_client(
+            service_name="s3")
 
         logging.debug(f"Instance variables for CopytoS3 : {self.__dict__}")
 
@@ -75,12 +74,9 @@ class CopyToS3(object):
         This method downloads file from local machine to s3
         """
         try:
-            object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
-                                         f"{kwargs['object_destination_path']}"
-            with open(object_destination_address, 'wb',
-                      transport_params={'session': self.destination_session_instance}) as f_write:
-                # This expects data in bytes format
-                f_write.write(kwargs["data"])
+            self.destination_s3_client_instance.put_object(Body=kwargs["data"],
+                                                           Bucket=kwargs["destination_s3_details"]["bucket_name"],
+                                                           Key=kwargs["object_destination_path"])
 
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
@@ -97,7 +93,8 @@ class DisplayS3Object(object):
         self.aws_details = None
         self.__dict__.update(kwargs)
 
-        self.session_instance = Session(aws_details=self.aws_details).return_session()
+        self.s3_client_instance = Client(aws_details=self.aws_details).return_client(
+            service_name="s3")
 
         logging.debug(f"Instance variables for DisplayS3Object : {self.__dict__}")
 
@@ -106,98 +103,15 @@ class DisplayS3Object(object):
         This method downloads file from local machine to s3 and then prints it
         """
         try:
-            object_address = f"s3://{kwargs['s3_details']['bucket_name']}/" \
-                             f"{kwargs['object_path']}"
+            source = self.s3_client_instance.get_object(
+                Bucket=kwargs["s3_details"]["bucket_name"],
+                Key=kwargs["object_path"]
+            )
 
-            # The return data is in binary
-            return open(object_address, 'rb',
-                        transport_params={'session': self.session_instance}).read()
+            return source["Body"].read()
 
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
-            raise BaseException("Problem in s3.py")
-
-
-class S3DeleteObject(object):
-    """
-        This class provide wrapper to delete S3 objects
-    """
-
-    def __init__(self, **kwargs):
-
-        # Required variables to drive this Object
-        self.aws_details = None
-
-        self.__dict__.update(kwargs)
-
-        # Variable received later when method called
-        self.s3_details = None
-
-        # S3 Client instance to use
-        self.s3_instance = Client(aws_details=self.aws_details).return_client(service_name="s3")
-
-        logging.debug(f"Instance variables for S3DeleteObject : {self.__dict__}")
-
-    @staticmethod
-    def aws_api_response_handler(response):
-        """
-        This method recursively add data into object Dictionary
-        :param response: list_objects_response from boto3 s3 client
-        """
-
-        if response["ResponseMetadata"]["HTTPStatusCode"] == 204:
-            logging.info("Deleted successfully")
-        logging.error(f"Response from delete : {response['ResponseMetadata']}")
-
-    def delete_from_s3(self, **kwargs):
-        """
-        Driving method which will get contents of all the objects in s3
-        :return: Returns object dict containing details about s3
-        """
-        self.s3_details = kwargs["s3_details"]
-
-        try:
-            # Required parameter to call list_objects_v2
-            S3DeleteObject.aws_api_response_handler(
-                self.s3_instance.delete_object(Bucket=self.s3_details["bucket_name"],
-                                               Key=kwargs["object_path"]))
-        except BaseException:
-            logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
-            raise BaseException("Problem in s3.py")
-
-
-class MoveObjectFromS3ToS3(object):
-    """
-    This class handles all the s3 object move
-    """
-
-    def __init__(self, **kwargs):
-        # Required variable to drive this Class, expected to be provided from parent Object
-        self.source_aws_details = None
-        self.destination_aws_details = None
-
-        self.__dict__.update(kwargs)
-
-        logging.debug(f"Instance variables for MoveObjectFromS3ToS3 : {self.__dict__}")
-
-    def move_from_source_to_destination_s3(self, **kwargs):
-        """
-        This method downloads file from one s3 to another s3
-        """
-        try:
-            CopyObjectFromS3ToS3(source_aws_details=self.source_aws_details,
-                                 destination_aws_details=self.destination_aws_details). \
-                copy_from_source_to_destination_s3(
-                source_s3_details=kwargs["source_s3_details"],
-                object_original_path=kwargs["object_original_path"],
-                destination_s3_details=kwargs["destination_s3_details"],
-                object_destination_path=kwargs["object_destination_path"])
-
-            S3DeleteObject(aws_details=self.source_aws_details). \
-                delete_from_s3(s3_details=kwargs["source_s3_details"],
-                               Key=kwargs["object_original_path"])
-        except BaseException:
-            logging.error(f"Uncaught exception in s3.py: {traceback.format_exc()}")
             raise BaseException("Problem in s3.py")
 
 
@@ -301,6 +215,89 @@ class S3ObjectList(object):
             raise BaseException("Problem in s3.py")
         finally:
             return self.object_dict
+
+
+class S3DeleteObject(object):
+    """
+        This class provide wrapper to delete S3 objects
+    """
+
+    def __init__(self, **kwargs):
+
+        # Required variables to drive this Object
+        self.aws_details = None
+
+        self.__dict__.update(kwargs)
+
+        # Variable received later when method called
+        self.s3_details = None
+
+        # S3 Client instance to use
+        self.s3_instance = Client(aws_details=self.aws_details).return_client(service_name="s3")
+
+        logging.debug(f"Instance variables for S3DeleteObject : {self.__dict__}")
+
+    @staticmethod
+    def aws_api_response_handler(response):
+        """
+        This method recursively add data into object Dictionary
+        :param response: list_objects_response from boto3 s3 client
+        """
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] == 204:
+            logging.info("Deleted successfully")
+        logging.error(f"Response from delete : {response['ResponseMetadata']}")
+
+    def delete_from_s3(self, **kwargs):
+        """
+        Driving method which will get contents of all the objects in s3
+        :return: Returns object dict containing details about s3
+        """
+        self.s3_details = kwargs["s3_details"]
+
+        try:
+            # Required parameter to call list_objects_v2
+            S3DeleteObject.aws_api_response_handler(
+                self.s3_instance.delete_object(Bucket=self.s3_details["bucket_name"],
+                                               Key=kwargs["object_path"]))
+        except BaseException:
+            logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
+            raise BaseException("Problem in s3.py")
+
+
+class MoveObjectFromS3ToS3(object):
+    """
+    This class handles all the s3 object move
+    """
+
+    def __init__(self, **kwargs):
+        # Required variable to drive this Class, expected to be provided from parent Object
+        self.source_aws_details = None
+        self.destination_aws_details = None
+
+        self.__dict__.update(kwargs)
+
+        logging.debug(f"Instance variables for MoveObjectFromS3ToS3 : {self.__dict__}")
+
+    def move_from_source_to_destination_s3(self, **kwargs):
+        """
+        This method downloads file from one s3 to another s3
+        """
+        try:
+            CopyObjectFromS3ToS3(source_aws_details=self.source_aws_details,
+                                 destination_aws_details=self.destination_aws_details). \
+                copy_from_source_to_destination_s3(
+                source_s3_details=kwargs["source_s3_details"],
+                object_original_path=kwargs["object_original_path"],
+                destination_s3_details=kwargs["destination_s3_details"],
+                object_destination_path=kwargs["object_destination_path"])
+
+            S3DeleteObject(aws_details=self.source_aws_details). \
+                delete_from_s3(s3_details=kwargs["source_s3_details"],
+                               Key=kwargs["object_original_path"])
+        except BaseException:
+            logging.error(f"Uncaught exception in s3.py: {traceback.format_exc()}")
+            raise BaseException("Problem in s3.py")
 
 
 if __name__ == "__main__":

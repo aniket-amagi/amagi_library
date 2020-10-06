@@ -4,3 +4,6 @@ requests
 pillow
 smart_open[all]
 pyyaml
+
+# For help in IDE to develop over boto3
+boto3-stubs
