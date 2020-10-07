@@ -18,6 +18,68 @@ except ModuleNotFoundError:
     from boto3_helper.client import Client
 
 
+class DisplayS3Object(object):
+    """
+    This class handles list of object data from S3
+    """
+
+    def __init__(self, **kwargs):
+        # Required variable to drive this Class, expected to be provided from parent Object
+        self.aws_details = None
+        self.__dict__.update(kwargs)
+
+        self.session_instance = Session(aws_details=self.aws_details).return_session()
+
+        logging.debug(f"Instance variables for DisplayS3Object : {self.__dict__}")
+
+    def object_content(self, **kwargs):
+        """
+        This method downloads file from local machine to s3 and then prints it
+        """
+        try:
+            object_address = f"s3://{kwargs['s3_details']['bucket_name']}/" \
+                             f"{kwargs['object_path']}"
+
+            # The return data is in binary
+            return open(object_address, 'rb',
+                        transport_params={'session': self.session_instance}).read()
+
+        except BaseException:
+            logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
+            raise BaseException("Problem in s3.py")
+
+
+class CopyToS3(object):
+    """
+    This class provide interface to copy from local to S3
+    """
+
+    def __init__(self, **kwargs):
+        # Required variable to drive this Class, expected to be provided from parent Object
+        self.destination_aws_details = None
+        self.__dict__.update(kwargs)
+
+        self.destination_session_instance = Session(aws_details=self.destination_aws_details).return_session()
+
+        logging.debug(f"Instance variables for CopytoS3 : {self.__dict__}")
+
+    def copy_to_destination_s3(self, **kwargs):
+        """
+        This method downloads file from local machine to s3
+        """
+        try:
+            object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
+                                         f"{kwargs['object_destination_path']}"
+            with open(object_destination_address, 'wb',
+                      transport_params={'session': self.destination_session_instance}) as f_write:
+                # This expects data in bytes format
+                f_write.write(kwargs["data"])
+
+        except BaseException:
+            logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
+            raise BaseException("Problem in s3.py")
+
+
 class CopyObjectFromS3ToS3(object):
     """
     This class provide interface to copy object from one s3 to another s3
@@ -56,40 +118,9 @@ class CopyObjectFromS3ToS3(object):
             raise BaseException("Problem in s3.py")
 
 
-class CopyToS3(object):
+class CopyObjectFromS3ToLocal(object):
     """
-    This class provide interface to copy from local to S3
-    """
-
-    def __init__(self, **kwargs):
-        # Required variable to drive this Class, expected to be provided from parent Object
-        self.destination_aws_details = None
-        self.__dict__.update(kwargs)
-
-        self.destination_session_instance = Session(aws_details=self.destination_aws_details).return_session()
-
-        logging.debug(f"Instance variables for CopytoS3 : {self.__dict__}")
-
-    def copy_to_destination_s3(self, **kwargs):
-        """
-        This method downloads file from local machine to s3
-        """
-        try:
-            object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
-                                         f"{kwargs['object_destination_path']}"
-            with open(object_destination_address, 'wb',
-                      transport_params={'session': self.destination_session_instance}) as f_write:
-                # This expects data in bytes format
-                f_write.write(kwargs["data"])
-
-        except BaseException:
-            logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
-            raise BaseException("Problem in s3.py")
-
-
-class DisplayS3Object(object):
-    """
-    This class handles list of object data from S3
+    This Class is to data handle from s3 to local
     """
 
     def __init__(self, **kwargs):
@@ -99,7 +130,7 @@ class DisplayS3Object(object):
 
         self.session_instance = Session(aws_details=self.aws_details).return_session()
 
-        logging.debug(f"Instance variables for DisplayS3Object : {self.__dict__}")
+        logging.debug(f"Instance variables for CopyObjectFromS3ToLocal : {self.__dict__}")
 
     def object_content(self, **kwargs):
         """
@@ -109,9 +140,10 @@ class DisplayS3Object(object):
             object_address = f"s3://{kwargs['s3_details']['bucket_name']}/" \
                              f"{kwargs['object_path']}"
 
-            # The return data is in binary
-            return open(object_address, 'rb',
-                        transport_params={'session': self.session_instance}).read()
+            with open(object_address, 'rb', transport_params={'session': self.session_instance}) as s3_file:
+                with open(kwargs["local_file_path"], 'wb') as local_file:
+                    for line in s3_file:
+                        local_file.write(line)
 
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
@@ -195,7 +227,7 @@ class MoveObjectFromS3ToS3(object):
 
             S3DeleteObject(aws_details=self.source_aws_details). \
                 delete_from_s3(s3_details=kwargs["source_s3_details"],
-                               Key=kwargs["object_original_path"])
+                               object_path=kwargs["object_original_path"])
         except BaseException:
             logging.error(f"Uncaught exception in s3.py: {traceback.format_exc()}")
             raise BaseException("Problem in s3.py")
