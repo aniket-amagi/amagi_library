@@ -195,7 +195,7 @@ class MoveObjectFromS3ToS3(object):
 
             S3DeleteObject(aws_details=self.source_aws_details). \
                 delete_from_s3(s3_details=kwargs["source_s3_details"],
-                               Key=kwargs["object_original_path"])
+                               object_path=kwargs["object_original_path"])
         except BaseException:
             logging.error(f"Uncaught exception in s3.py: {traceback.format_exc()}")
             raise BaseException("Problem in s3.py")
