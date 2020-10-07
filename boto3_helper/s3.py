@@ -132,7 +132,7 @@ class CopyObjectFromS3ToLocal(object):
 
         logging.debug(f"Instance variables for CopyObjectFromS3ToLocal : {self.__dict__}")
 
-    def object_content(self, **kwargs):
+    def download_content(self, **kwargs):
         """
         This method downloads file from local machine to s3 and then prints it
         """
