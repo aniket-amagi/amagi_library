@@ -68,6 +68,7 @@ class CopyToS3(object):
         This method downloads file from local machine to s3
         """
         try:
+            # TODO : HANDLE MULTIPART UPLOAD
             object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
                                          f"{kwargs['object_destination_path']}"
             with open(object_destination_address, 'wb',
