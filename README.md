@@ -8,3 +8,5 @@ TODO:
 2.checkout poetry
 
 3.checkout pyre
+
+4.checkout intellibot
