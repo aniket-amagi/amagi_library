@@ -7,3 +7,7 @@ pyyaml
 
 # For help in IDE to develop over boto3
 boto3-stubs
+
+# Performant Type check
+pyre-check
+
