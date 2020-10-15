@@ -3,14 +3,18 @@
 """
 This is a helper script for consuming Blip Playlist API
 """
+import json
 import logging
+import urllib.request
+
+from datetime import datetime
+from urllib.parse import urlencode
 
 try:
     from amagi_library.helper.http_requests import HTTPRequests
 except ModuleNotFoundError:
     logging.info("Module called internally")
     from helper.http_requests import HTTPRequests
-
 
 class Playlist(object):
     """
@@ -88,7 +92,8 @@ class Playlist(object):
 
         if "feed_id" in kwargs:
             url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}.json"
-            logging.info(f"Playlist Details url invoked to get details : {url}")
+            logging.info(
+                f"Playlist Details url invoked to get details : {url}")
             kwargs.update(self.default_payload)
             return self.http_requests_instance.call_get_requests(url=url, params=kwargs,
                                                                  error_message="Error occurred when trying to "
@@ -97,10 +102,53 @@ class Playlist(object):
             logging.error("feed_id is required to use this API")
             return None
 
+    def get_playlists(self, url, params, format):
+        params.update(self.default_payload)
+        response = self.http_requests_instance.call_get_requests(
+            url=url, params=params, error_message="Error occurred when trying to access Blip for Playlist Details: ")
+        try:
+            if response.status_code == 200:
+                data = response.content.decode("utf-8")
+                if format == "json":
+                    data = json.loads(data)
+                return data
+        except Exception as e:
+            logging.error(f"Error while parsing response: {e}")
+
+    def playlists_url(self, feed_id, auth_token, playlistdate, published):
+        date = datetime.strptime(playlistdate, "%d-%m-%Y").date()
+        datestr = "{0:4d}-{1:02d}-{2:02d}".format(
+            date.year, date.month, date.day)
+        params = {
+            'feed_id': feed_id,
+            'start_date': datestr,
+            'end_date': datestr,
+            'ptype': "normal",
+            "auth_token": auth_token
+        }
+        if published:
+            params['status'] = "published"
+        return f"https://{self.customer}.amagi.tv/v1/api/playlist.json", params
+
+    def playlist_date(self, playlist):
+        return playlist["created_at"]
+        
+    def get_days_playlists(self, feed_id, token, datestr, published):
+        url, params = self.playlists_url(feed_id, token, datestr, published)
+        playlists = self.get_playlists(url, params, "json")
+        if playlists and "playlists" in playlists:
+            playlists_sorted = sorted(
+                playlists["playlists"], key=self.playlist_date, reverse=True)
+            return playlists_sorted
+
+    def get_playlist_csv(self, playlist_id, account_name, channel_code):
+        csv_url = f"https://{self.customer}.amagi.tv/{account_name}/{channel_code}/playlist/{playlist_id}.csv"
+        return self.get_playlists(csv_url, {"auth_token": self.token}, "csv")
 
 if __name__ == "__main__":
     # LOGGING #
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
+    logging.basicConfig(format=logging_format,
+                        level=logging.INFO, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
     logger = logging.getLogger(__name__)
     playlist_instance = Playlist(customer=None, token=None)
