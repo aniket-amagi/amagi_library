@@ -5,6 +5,7 @@ This scripts provides wrapper over AWS S3
 """
 import logging
 import traceback
+from pathlib import Path
 
 from smart_open import open
 
@@ -334,6 +335,7 @@ class S3ObjectList(object):
             raise BaseException("Problem in s3.py")
         finally:
             return self.object_dict
+
 
 
 if __name__ == "__main__":
