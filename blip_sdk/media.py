@@ -59,7 +59,12 @@ class Media(object):
         :return: call_get_requests
         """
         if "account_id" or "feed_id" in kwargs and asset_id:
-            url = f"https://{self.customer}.amagi.tv/v1/api/media/{asset_id}"
+            format = "json"
+            if "format" in kwargs:
+                format = kwargs['format']
+            if "detailed" in kwargs and kwargs['detailed']:
+                kwargs['detailed'] = True
+            url = f"https://{self.customer}.amagi.tv/v1/api/media/{asset_id}.{format}"
             logging.info(f"GET url invoked to get details : {url}")
             kwargs.update(self.default_payload)
             return self.http_requests_instance.call_get_requests(url=url, params=kwargs,
