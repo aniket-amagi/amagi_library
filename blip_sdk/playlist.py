@@ -143,9 +143,13 @@ class Playlist(object):
 
     def get_playlist_csv(self, playlist_id, account_name, channel_code, feed_id = None, uploaded = False):
         csv_url = f"https://{self.customer}.amagi.tv/{account_name}/{channel_code}/playlist/{playlist_id}.csv"
+        params = {
+            "auth_token": self.token
+        }
         if uploaded:
-            csv_url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}/download?feed_id={feed_id}"
-        return self.get_playlists(csv_url, {"auth_token": self.token}, "csv")
+            csv_url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}/download"
+            params['feed_id'] = feed_id
+        return self.get_playlists(csv_url, params, "csv")
 
     def get_asset_status(self, playlist_id, **kwargs):
         url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}/asset_status"
