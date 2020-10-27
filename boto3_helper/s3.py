@@ -279,7 +279,7 @@ class S3ObjectList(object):
         else:
             return False
 
-    def __add_details_to_object_dict(self, list_objects_response):
+    def __add_details_to_object_dict(self, list_objects_response, last_modified = None):
         """
         This method recursively add data into object Dictionary
         :param list_objects_response: list_objects_response from boto3 s3 client
@@ -290,9 +290,13 @@ class S3ObjectList(object):
 
             for item in list_objects_response["Contents"]:
                 if self.__object_filter(item):
-                    object_name = item["Key"]
-                    logging.debug(f"Object available in s3 in folder {self.folder_to_check} : {object_name}")
-                    self.object_dict.update({object_name: item})
+                    match = True
+                    if last_modified and item['LastModified'] < last_modified:
+                        match = False
+                    if match:
+                        object_name = item["Key"]
+                        logging.debug(f"Object available in s3 in folder {self.folder_to_check} : {object_name}")
+                        self.object_dict.update({object_name: item})
 
             # This check if the response received was truncated or not
             # If truncated then recursively call and update dictionary
@@ -301,7 +305,7 @@ class S3ObjectList(object):
                     self.s3_instance.list_objects_v2(
                         Bucket=self.s3_details["bucket_name"],
                         Prefix=self.folder_to_check,
-                        ContinuationToken=list_objects_response["NextContinuationToken"]))
+                        ContinuationToken=list_objects_response["NextContinuationToken"]), last_modified)
         else:
             logging.error(
                 f"Response from list_objects_v2 : {list_objects_response['ResponseMetadata']}")
@@ -319,12 +323,14 @@ class S3ObjectList(object):
 
         self.s3_details = kwargs["s3_details"]
 
+        last_modified = kwargs['last_modified'] if "last_modified" in kwargs else None
+
         try:
             self.object_dict = dict()
 
             # Required parameter to call list_objects_v2
             self.__add_details_to_object_dict(self.s3_instance.list_objects_v2(Bucket=self.s3_details["bucket_name"],
-                                                                               Prefix=self.folder_to_check))
+                                                                               Prefix=self.folder_to_check), last_modified)
 
             logging.debug(f"Objects matching filter criteria : {self.object_dict}")
 

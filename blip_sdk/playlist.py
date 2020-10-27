@@ -141,9 +141,18 @@ class Playlist(object):
                 playlists["playlists"], key=self.playlist_date, reverse=True)
             return playlists_sorted
 
-    def get_playlist_csv(self, playlist_id, account_name, channel_code):
+    def get_playlist_csv(self, playlist_id, account_name, channel_code, feed_id = None, uploaded = False):
         csv_url = f"https://{self.customer}.amagi.tv/{account_name}/{channel_code}/playlist/{playlist_id}.csv"
+        if uploaded:
+            csv_url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}/download?feed_id={feed_id}"
         return self.get_playlists(csv_url, {"auth_token": self.token}, "csv")
+
+    def get_asset_status(self, playlist_id, **kwargs):
+        url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}/asset_status"
+        logging.info(f"Asset Status url invoked to get details : {url}")
+        kwargs.update(self.default_payload)
+        return self.http_requests_instance.call_get_requests(url=url, params=kwargs, 
+            error_message="Error occurred when trying to access Blip for Asset Status")
 
 if __name__ == "__main__":
     # LOGGING #
