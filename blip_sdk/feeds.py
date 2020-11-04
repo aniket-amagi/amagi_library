@@ -58,8 +58,8 @@ if __name__ == "__main__":
 
     # LOGGING #
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
+    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d %H:%M:%S:%Z(%z)")
     logger = logging.getLogger(__name__)
-    feed_instance = Feeds(customer="{to_be_filled}", token="{to_be_filled}")
+    feed_instance = Feeds(customer="to_be_filled", token="to_be_filled")
     feed_id_response = feed_instance.get_feed_id_request()
     pprint(Deserializer.json_deserializer(feed_id_response.text, feed_id_response.encoding))

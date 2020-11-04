@@ -20,7 +20,7 @@ class Deserializer(object):
     """
 
     @staticmethod
-    def json_deserializer(text, encoding='utf-8'):
+    def json_deserializer(text: str, encoding='utf-8'):
         """
         This method deserializes the data received in json format
         :param encoding: Encoding of text (Generally assumed utf-8)
@@ -38,11 +38,10 @@ class Deserializer(object):
             logging.error(f"Problem decoding Json : {traceback.format_exc()}")
         except AttributeError:
             logging.error("Text provided is empty")
-        finally:
-            return data_dict
+        return data_dict
 
     @staticmethod
-    def csv_deserializer(text, encoding='utf-8'):
+    def csv_deserializer(text: str, encoding='utf-8'):
         data_dict = None
         try:
             if not encoding == 'utf-8':
@@ -54,11 +53,10 @@ class Deserializer(object):
                                        quotechar=dialect.quotechar)
         except BaseException:
             logging.error(f"Problem decoding csv : {traceback.format_exc()}")
-        finally:
-            return data_dict
+        return data_dict
 
     @staticmethod
-    def yaml_deserializer(text, encoding='utf-8'):
+    def yaml_deserializer(text: str, encoding='utf-8'):
         data_dict = None
         try:
             if not encoding == 'utf-8':
@@ -68,12 +66,11 @@ class Deserializer(object):
             data_dict = yaml.load(encoding_handled_text)
         except BaseException:
             logging.error(f"Problem decoding yaml : {traceback.format_exc()}")
-        finally:
-            return data_dict
+        return data_dict
 
 
 if __name__ == "__main__":
     # LOGGING #
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
+    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d %H:%M:%S:%Z(%z)")
     logger = logging.getLogger(__name__)

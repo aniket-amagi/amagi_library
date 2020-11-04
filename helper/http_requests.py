@@ -12,6 +12,8 @@ class HTTPRequests(object):
     """
         This method defines http requests call and handle error condition based on that
     """
+    # Class Variables
+    no_response = "No Response !!"
 
     def __init__(self):
         # Created Requests session for Blip API
@@ -25,7 +27,8 @@ class HTTPRequests(object):
         """
         self.session.close()
 
-    def call_get_requests(self, url, headers=None, params=None, stream=False, error_message="Error in GET Request : "):
+    def call_get_requests(self, url: str, headers=None, params=None, stream=False,
+                          error_message="Error in GET Request : "):
         """
         Static method to call requests to get response using GET calls
         :param headers: Headers for get call
@@ -57,10 +60,11 @@ class HTTPRequests(object):
                 if response.encoding or response.text:
                     logging.debug(f"Response Text : {response.text}")
             else:
-                logging.critical("No response!!")
-            return response
+                logging.critical(HTTPRequests.no_response)
+        return response
 
-    def call_put_requests(self, url, headers=None, params=None, data=None, error_message="Error in PUT Request : "):
+    def call_put_requests(self, url: str, headers=None, params=None, data=None,
+                          error_message="Error in PUT Request : "):
         """
         Static method to call requests to get response using PUT calls
         :param data: Adding data for put call
@@ -91,10 +95,10 @@ class HTTPRequests(object):
                 if response.encoding or response.text:
                     logging.debug(f"Response Text : {response.text}")
             else:
-                logging.critical("No response!!")
-            return response
+                logging.critical(HTTPRequests.no_response)
+        return response
 
-    def call_post_requests(self, url, data=None, headers=None, params=None, files=None,
+    def call_post_requests(self, url: str, data=None, headers=None, params=None, files=None,
                            auth=None, error_message="Error in POST Request : "):
         """
         Static method to call requests to get response using POST calls
@@ -130,10 +134,10 @@ class HTTPRequests(object):
                 if response.encoding or response.text:
                     logging.debug(f"Response Text : {response.text}")
             else:
-                logging.critical("No response!!")
-            return response
+                logging.critical(HTTPRequests.no_response)
+        return response
 
-    def call_delete_requests(self, url, params=None, error_message="Error in DELETE Request : "):
+    def call_delete_requests(self, url: str, params=None, error_message="Error in DELETE Request : "):
         """
         Static method to call requests to get response using GET calls
         :param url:  URL for get call
@@ -160,10 +164,10 @@ class HTTPRequests(object):
                 if response.encoding or response.text:
                     logging.debug(f"Response Text : {response.text}")
             else:
-                logging.critical("No response!!")
-            return response
+                logging.critical(HTTPRequests.no_response)
+        return response
 
-    def call_head_requests(self, url, error_message="Error in HEAD Request : "):
+    def call_head_requests(self, url: str, error_message="Error in HEAD Request : "):
         """
         Static method to call requests to get response using HEAD calls
         :param url:  URL for get call
@@ -188,13 +192,13 @@ class HTTPRequests(object):
                 if response.encoding or response.text:
                     logging.debug(f"Response Text : {response.text}")
             else:
-                logging.critical("No response!!")
-            return response
+                logging.critical(HTTPRequests.no_response)
+        return response
 
 
 if __name__ == "__main__":
     # LOGGING #
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
+    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d %H:%M:%S:%Z(%z)")
     logger = logging.getLogger(__name__)
-    HTTPRequests().call_get_requests("https://aniket-dev.s3.us-east-1.amazonaws.com/test.xml")
+    HTTPRequests().call_get_requests("https://www.amagi.com")

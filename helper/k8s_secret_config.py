@@ -10,13 +10,10 @@ import traceback
 
 try:
     from amagi_library.boto3_helper.client import Client
-except ModuleNotFoundError:
-    logging.info("Module called internally")
-    from boto3_helper.client import Client
-try:
     from amagi_library.boto3_helper.s3 import DisplayS3Object
 except ModuleNotFoundError:
     logging.info("Module called internally")
+    from boto3_helper.client import Client
     from boto3_helper.s3 import DisplayS3Object
 
 

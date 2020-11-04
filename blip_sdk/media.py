@@ -17,6 +17,11 @@ class Media(object):
     Class for consuming Media API from Blip
     """
 
+    # Class Variables
+    account_id = "account_id"
+    feed_id = "feed_id"
+    feeds = "feeds"
+
     def __init__(self, **kwargs):
 
         # These variables are defined so that
@@ -41,7 +46,7 @@ class Media(object):
         This method get media details for an asset id
         :return: call_get_requests
         """
-        if "account_id" or "feed_id" in kwargs:
+        if Media.account_id or Media.feed_id in kwargs:
             url = f"https://{self.customer}.amagi.tv/v1/api/media"
             logging.info(f"GET url invoked to get details : {url}")
             kwargs.update(self.default_payload)
@@ -52,13 +57,13 @@ class Media(object):
             logging.error("Either account_id or feed_id is required to use this API")
             return None
 
-    def get_media_details(self, asset_id, **kwargs):
+    def get_media_details(self, asset_id: str, **kwargs):
         """
         This method get media details for an asset id
         :param asset_id: Asset ID
         :return: call_get_requests
         """
-        if "account_id" or "feed_id" in kwargs and asset_id:
+        if Media.account_id or Media.feed_id in kwargs and asset_id:
             url = f"https://{self.customer}.amagi.tv/v1/api/media/{asset_id}"
             logging.info(f"GET url invoked to get details : {url}")
             kwargs.update(self.default_payload)
@@ -69,7 +74,7 @@ class Media(object):
             logging.error("Either (account_id or feed_id) and asset_id is required to use this API")
             return None
 
-    def put_media_details(self, media_id, data=None, **kwargs):
+    def put_media_details(self, media_id: str, data=None, **kwargs):
         """
         This method to put media details
         :param media_id: Media ID
@@ -95,7 +100,7 @@ class Media(object):
         :param files: file to be uploaded to blip
         :return: call_post_requests
         """
-        if "account_id" or "feed_id" in kwargs and files:
+        if Media.account_id or Media.feed_id in kwargs and files:
             url = f"https://{self.customer}.amagi.tv/v1/api/media/meta_upload.json"
             logging.info(f"POST url invoked to get details : {url}")
             kwargs.update(self.default_payload)
@@ -107,13 +112,13 @@ class Media(object):
             logging.error("Either (account_id or feed_id) and files is required to use this API")
             return None
 
-    def delete_media_asset(self, media_id, **kwargs):
+    def delete_media_asset(self, media_id: str, **kwargs):
         """
         This method deletes the asset from Blip
         :param media_id: media ID of assets
         :param kwargs: keyword arguments
         """
-        if "account_id" or "feed_id" and "feeds" in kwargs:
+        if Media.account_id or Media.feed_id and Media.feeds in kwargs:
             url = f"https://{self.customer}.amagi.tv/v1/api/media/{media_id}"
             logging.info(f"DELETE url invoked to get details : {url}")
             kwargs.update(self.default_payload)
@@ -130,7 +135,7 @@ class Media(object):
         This method is to get all media types available in Blip
         :param kwargs: keyword arguments
         """
-        if "account_id" or "feed_id" in kwargs:
+        if Media.account_id or Media.feed_id in kwargs:
             url = f"https://{self.customer}.amagi.tv/v1/api/types"
             logging.info(f"GET url invoked to get details : {url}")
             kwargs.update(self.default_payload)
@@ -153,7 +158,7 @@ if __name__ == "__main__":
 
     # LOGGING #
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
+    logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%Y/%m/%d %H:%M:%S:%Z(%z)")
     logger = logging.getLogger(__name__)
     media_instance = Media(customer="{to_be_filled}", token="{to_be_filled}")
     all_media_details_response = media_instance.get_all_media_details(account_id=1)

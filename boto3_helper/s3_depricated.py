@@ -98,7 +98,7 @@ class DisplayS3Object(object):
 
         logging.debug(f"Instance variables for DisplayS3Object : {self.__dict__}")
 
-    def object_content(self, **kwargs):
+    def object_content(self, **kwargs) -> bytes:
         """
         This method downloads file from local machine to s3 and then prints it
         """
@@ -140,7 +140,7 @@ class S3ObjectList(object):
 
         logging.debug(f"Instance variables for s3ObjectList : {self.__dict__}")
 
-    def __object_filter(self, item):
+    def __object_filter(self, item: dict) -> bool:
         """
         This method filter based on the input provided in self.object_filter
         :param item: s3 item which needs to be checked
@@ -159,7 +159,7 @@ class S3ObjectList(object):
         else:
             return False
 
-    def __add_details_to_object_dict(self, list_objects_response):
+    def __add_details_to_object_dict(self, list_objects_response: dict):
         """
         This method recursively add data into object Dictionary
         :param list_objects_response: list_objects_response from boto3 s3 client
@@ -186,7 +186,7 @@ class S3ObjectList(object):
             logging.error(
                 f"Response from list_objects_v2 : {list_objects_response['ResponseMetadata']}")
 
-    def check_contents_of_s3(self, **kwargs):
+    def check_contents_of_s3(self, **kwargs) -> dict:
         """
         Driving method which will get contents of all the objects in s3
         :return: Returns object dict containing details about s3
@@ -213,8 +213,7 @@ class S3ObjectList(object):
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
             raise BaseException("Problem in s3.py")
-        finally:
-            return self.object_dict
+        return self.object_dict
 
 
 class S3DeleteObject(object):
@@ -303,5 +302,5 @@ class MoveObjectFromS3ToS3(object):
 if __name__ == "__main__":
     # LOGGING #
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
+    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d %H:%M:%S:%Z(%z)")
     logger = logging.getLogger(__name__)

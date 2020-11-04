@@ -86,7 +86,7 @@ class Hybrik(object):
             return wrapper
 
     @Decorator.refresh_token
-    def send_job(self, data, schema="hybrik", **kwargs):
+    def send_job(self, data: str, schema="hybrik", **kwargs):
         """
         This method send jobs to Hybrik API
         :param data: json data to be sent
@@ -109,15 +109,11 @@ class Hybrik(object):
                                                           auth=auth)
         return response
 
-    @Decorator.refresh_token
-    def check_job(self, **kwargs):
-        pass
-
 
 if __name__ == "__main__":
     # LOGGING #
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
+    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d %H:%M:%S:%Z(%z)")
     logger = logging.getLogger(__name__)
     Hybrik(url="https://api-demo.hybrik.com",
            auth_key="",
