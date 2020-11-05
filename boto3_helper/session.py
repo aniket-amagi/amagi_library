@@ -63,5 +63,4 @@ class Session(object):
         except BaseException:
             logging.error(f"Uncaught exception in session.py : {traceback.format_exc()}")
             raise BaseException("Problem in session.py")
-        finally:
-            return session
+        return session

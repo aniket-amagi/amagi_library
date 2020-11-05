@@ -29,8 +29,9 @@ class DynamoAccessor(object):
 
         logging.debug(f"Instance variables for DynamoResource : {self.__dict__}")
 
-    def create_table(self, table_name, partition_key, partition_key_type="S", sort_key=None, sort_key_type="S",
-                     other_key_list=None):
+    def create_table(self, table_name: str, partition_key: str,
+                     partition_key_type="S", sort_key=None,
+                     sort_key_type="S", other_key_list=None):
         """
         Create Table in Dynamo DB
         :param other_key_list: Other Key list (default : None)
@@ -82,10 +83,9 @@ class DynamoAccessor(object):
 
         except BaseException:
             logging.error(f"ERROR occurred while creating table {table_name} : {traceback.format_exc()}")
-        finally:
-            return table
+        return table
 
-    def delete_table(self, table_name):
+    def delete_table(self, table_name: str):
         """
         Delete table from Dynamo DB
         :param table_name: Table Name
@@ -95,7 +95,7 @@ class DynamoAccessor(object):
         except BaseException:
             logging.error(f"ERROR occurred while deleting table {table_name} : {traceback.format_exc()}")
 
-    def get_table_metadata(self, table_name):
+    def get_table_metadata(self, table_name: str):
         """
         Get some metadata about chosen table.
         """
@@ -111,7 +111,7 @@ class DynamoAccessor(object):
             "global_secondary_indices": table.global_secondary_indexes
         }
 
-    def read_table_item(self, table_name, pk_name, pk_value):
+    def read_table_item(self, table_name: str, pk_name: str, pk_value: str):
         """
         Return item read by primary key.
         """
@@ -124,7 +124,7 @@ class DynamoAccessor(object):
 
         return response
 
-    def add_item(self, table_name, col_dict):
+    def add_item(self, table_name: str, col_dict: dict):
         """
         Add one item (row) to table. col_dict is a dictionary {col_name: value}.
         """
@@ -137,7 +137,7 @@ class DynamoAccessor(object):
 
         return response
 
-    def update_item(self, table_name, pk_name, pk_value, col_dict):
+    def update_item(self, table_name: str, pk_name: str, pk_value: str, col_dict: dict):
         """
         This method is to update dyanmo db table
         :param table_name: table_name
@@ -168,10 +168,9 @@ class DynamoAccessor(object):
                                          ReturnValues="UPDATED_NEW")
         except BaseException:
             logging.error(f"ERROR occurred while updating item : {traceback.format_exc()}")
-        finally:
-            return response
+        return response
 
-    def delete_item(self, table_name, pk_name, pk_value):
+    def delete_item(self, table_name: str, pk_name: str, pk_value: str):
         """
         Delete an item (row) in table from its primary key.
         """
@@ -182,7 +181,7 @@ class DynamoAccessor(object):
 
         return response
 
-    def scan_table(self, table_name, filter_key=None, filter_value=None):
+    def scan_table(self, table_name: str, filter_key=None, filter_value=None):
         """
         Perform a scan operation on table.
         Can specify filter_key (col name) and its value to be filtered.
@@ -198,7 +197,7 @@ class DynamoAccessor(object):
         logging.debug(f"Response from Dynamo DB : {response}")
         return response
 
-    def query_table(self, table_name, filter_key=None, filter_value=None):
+    def query_table(self, table_name: str, filter_key=None, filter_value=None):
         """
         Perform a query operation on the table.
         Can specify filter_key (col name) and its value to be filtered.
@@ -214,7 +213,7 @@ class DynamoAccessor(object):
         logging.debug(f"Response from Dynamo DB : {response}")
         return response
 
-    def scan_table_allpages(self, table_name, filter_key=None, filter_value=None):
+    def scan_table_allpages(self, table_name: str, filter_key=None, filter_value=None):
         """
         Perform a scan operation on table.
         Can specify filter_key (col name) and its value to be filtered.
@@ -243,5 +242,5 @@ class DynamoAccessor(object):
 if __name__ == "__main__":
     # LOGGING #
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
+    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d %H:%M:%S:%Z(%z)")
     logger = logging.getLogger(__name__)

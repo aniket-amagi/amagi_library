@@ -1,7 +1,14 @@
+#!/usr/bin/python3
+# coding= utf-8
+import logging
 import os
 import uuid
 
-from amagi_library.helper.workdir import WorkDirectory
+try:
+    from amagi_library.helper.workdir import WorkDirectory
+except ModuleNotFoundError:
+    logging.info("Module called internally")
+    from helper.workdir import WorkDirectory
 
 
 class SaveReport(object):

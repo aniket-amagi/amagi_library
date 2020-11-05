@@ -68,13 +68,4 @@ class Resource(object):
         except BaseException:
             logging.error(f"Uncaught exception in resource.py: {traceback.format_exc()}")
             raise BaseException("Problem in resource.py")
-
-        finally:
-            return resource
-
-
-if __name__ == "__main__":
-    # LOGGING #
-    logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
-    logger = logging.getLogger(__name__)
+        return resource

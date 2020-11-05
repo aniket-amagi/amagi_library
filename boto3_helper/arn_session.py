@@ -4,10 +4,9 @@
 This scripts creates boto3 session based Assumed Role Credentials
 """
 import datetime
-import logging
 
 import boto3
-import botocore
+from botocore import credentials, session
 from dateutil.tz import tzlocal
 
 
@@ -19,23 +18,16 @@ def assumed_role_session(role_arn, base_session):
     :param base_session: Base Session for which ARP has been provided
     :return: Boto3 session with ARP
     """
-    fetcher = botocore.credentials.AssumeRoleCredentialFetcher(
+    fetcher = credentials.AssumeRoleCredentialFetcher(
         client_creator=base_session.create_client,
         source_credentials=base_session.get_credentials(),
         role_arn=role_arn
     )
-    creds = botocore.credentials.DeferredRefreshableCredentials(
+    creds = credentials.DeferredRefreshableCredentials(
         method="assume-role",
         refresh_using=fetcher.fetch_credentials,
         time_fetcher=lambda: datetime.datetime.now(tzlocal())
     )
-    botocore_session = botocore.session.Session()
+    botocore_session = session.Session()
     botocore_session._credentials = creds
     return boto3.Session(botocore_session=botocore_session)
-
-
-if __name__ == "__main__":
-    # LOGGING #
-    logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
-    logger = logging.getLogger(__name__)

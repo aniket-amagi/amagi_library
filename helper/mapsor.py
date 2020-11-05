@@ -7,7 +7,11 @@ Xref : https://mapsor.amagi.tv/docs/
 import json
 import logging
 
-from amagi_library.helper.http_requests import HTTPRequests
+try:
+    from amagi_library.helper.http_requests import HTTPRequests
+except ModuleNotFoundError:
+    logging.info("Module called internally")
+    from helper.http_requests import HTTPRequests
 
 
 class Mapsor(object):
@@ -48,12 +52,12 @@ class Mapsor(object):
             }
 
             response = self.http_requests_instance.call_post_requests(url, data=payload, headers=headers, params=params)
-            logging.info(f"Status Code from Mapsor :{response.status_code}")
+            logging.info(f"Status Code from Mapsor : {response.status_code}")
             logging.info(f"Response from Mapsor : {response.text}")
         else:
             logging.error("One of the required key(cloud, region, id, customer) is missing")
 
-    def submitted_job_status(self, job_id):
+    def submitted_job_status(self, job_id: str):
         """
         This method schedules a container job
         xref: https://mapsor.amagi.tv/docs/#/paths/~1status~1{id}/get
@@ -71,7 +75,7 @@ class Mapsor(object):
         response = self.http_requests_instance.call_get_requests(url, headers=headers, params=params)
         logging.info(f"Response from Mapsor : {response.text}")
 
-    def cancel_submitted_job(self, job_id):
+    def cancel_submitted_job(self, job_id: str):
         """
         This method to cancel a submitted job
         xref: https://mapsor.amagi.tv/docs/#/paths/~1cancel~1{id}/get
@@ -89,7 +93,7 @@ class Mapsor(object):
         response = self.http_requests_instance.call_get_requests(url, headers=headers, params=params)
         logging.info(f"Response from Mapsor : {response.text}")
 
-    def retry_submitted_job(self, job_id):
+    def retry_submitted_job(self, job_id: str):
         """
         This method to retry a submitted job
         xref: https://mapsor.amagi.tv/docs/#/paths/~1retry~1{id}/get
@@ -106,7 +110,7 @@ class Mapsor(object):
         response = self.http_requests_instance.call_get_requests(url, headers=headers, params=params)
         logging.info(f"Response from Mapsor : {response.text}")
 
-    def return_job_logs(self, job_id):
+    def return_job_logs(self, job_id: str):
         """
         This method to return job logs
         xref: https://mapsor.amagi.tv/docs/#/paths/~1logs~1{id}/get
@@ -122,3 +126,10 @@ class Mapsor(object):
 
         response = self.http_requests_instance.call_get_requests(url, headers=headers, params=params)
         logging.info(f"Response from Mapsor : {response.text}")
+
+
+if __name__ == "__main__":
+    # LOGGING #
+    logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
+    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d %H:%M:%S:%Z(%z)")
+    logger = logging.getLogger(__name__)

@@ -36,7 +36,7 @@ class Segments(object):
         # Removing HTTP request session
         self.http_requests_instance.__del__()
 
-    def post_segment_information(self, media_id, **kwargs):
+    def post_segment_information(self, media_id: str, **kwargs):
         """
         This method to put media details
         :param media_id: Media ID
@@ -58,6 +58,6 @@ class Segments(object):
 if __name__ == "__main__":
     # LOGGING #
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
+    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d %H:%M:%S:%Z(%z)")
     logger = logging.getLogger(__name__)
     segments_instance = Segments(customer=None, token=None)

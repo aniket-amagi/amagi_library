@@ -53,7 +53,7 @@ class Playlist(object):
                                                              error_message="Error occurred when trying to "
                                                                            "access Blip for Playlist : ")
 
-    def get_missing_asset_per_feed_per_playlist(self, playlist_id, **kwargs):
+    def get_missing_asset_per_feed_per_playlist(self, playlist_id: str, **kwargs):
         """
         This method gets all the missing item in playlist from blip
         :param playlist_id: Playlist ID
@@ -68,7 +68,7 @@ class Playlist(object):
                                                                            "trying to "
                                                                            "access Blip for Missing assets : ")
 
-    def get_asset_status_on_cloud_and_device(self, playlist_id, **kwargs):
+    def get_asset_status_on_cloud_and_device(self, playlist_id: str, **kwargs):
         """
         This method get all the assets in a playlist and its details
         :param playlist_id: Playlist ID
@@ -82,7 +82,7 @@ class Playlist(object):
                                                              error_message="Error occurred when trying to "
                                                                            "access Blip for Asset Status on Cloud: ")
 
-    def get_playlist_details(self, playlist_id, **kwargs):
+    def get_playlist_details(self, playlist_id: str, **kwargs):
         """
         This method get details about the playlist
         :param playlist_id: Playlist ID
@@ -161,7 +161,6 @@ class Playlist(object):
 if __name__ == "__main__":
     # LOGGING #
     logging_format = "%(asctime)s::%(funcName)s::%(levelname)s:: %(message)s"
-    logging.basicConfig(format=logging_format,
-                        level=logging.INFO, datefmt="%Y/%m/%d:%H:%M:%S:%Z:%z")
+    logging.basicConfig(format=logging_format, level=logging.DEBUG, datefmt="%Y/%m/%d %H:%M:%S:%Z(%z)")
     logger = logging.getLogger(__name__)
     playlist_instance = Playlist(customer=None, token=None)
