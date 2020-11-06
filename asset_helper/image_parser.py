@@ -41,7 +41,7 @@ class ImageParser(object):
                     "info": self.image_parser.image.info,
                     "aspect_ratio": Fraction(self.image_parser.image.width, self.image_parser.image.height)
                 }
-                logging.info(f"Image related details : {image_details}")
+                logging.info(f"Image related details : {image_details['aspect_ratio']}")
 
             else:
                 logging.error("Unable to decode image from the url")

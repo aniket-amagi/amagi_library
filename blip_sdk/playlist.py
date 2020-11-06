@@ -111,9 +111,10 @@ class Playlist(object):
                 data = response.content.decode("utf-8")
                 if format == "json":
                     data = json.loads(data)
-                return data
+                return data, format
         except Exception as e:
             logging.error(f"Error while parsing response: {e}")
+            return response.text, "osc"
 
     def playlists_url(self, feed_id, auth_token, playlistdate, published):
         date = datetime.strptime(playlistdate, "%d-%m-%Y").date()
@@ -135,7 +136,7 @@ class Playlist(object):
         
     def get_days_playlists(self, feed_id, token, datestr, published):
         url, params = self.playlists_url(feed_id, token, datestr, published)
-        playlists = self.get_playlists(url, params, "json")
+        playlists, _ = self.get_playlists(url, params, "json")
         if playlists and "playlists" in playlists:
             playlists_sorted = sorted(
                 playlists["playlists"], key=self.playlist_date, reverse=True)
@@ -149,7 +150,8 @@ class Playlist(object):
         if uploaded:
             csv_url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}/download"
             params['feed_id'] = feed_id
-        return self.get_playlists(csv_url, params, "csv")
+        text, format = self.get_playlists(csv_url, params, "csv")
+        return text, format
 
     def get_asset_status(self, playlist_id, **kwargs):
         url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}/asset_status"
