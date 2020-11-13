@@ -112,12 +112,12 @@ class CopyFromURLtoS3(object):
 
             object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
                                          f"{kwargs['object_destination_path']}"
-            if self.url_session.call_head_requests(url=kwargs["url"]).status_code == 200:
-                with open(kwargs["url"], "rb") as f_read:
-                    with open(object_destination_address, "wb",
-                              transport_params={"session": self.destination_session_instance}) as f_write:
-                        for data_line in f_read:
-                            f_write.write(data_line)
+            #if self.url_session.call_get_requests(url=kwargs["url"]).status_code == 200:
+            with open(kwargs["url"], "rb") as f_read:
+                with open(object_destination_address, "wb",
+                          transport_params={"session": self.destination_session_instance}) as f_write:
+                    for data_line in f_read:
+                        f_write.write(data_line)
 
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
