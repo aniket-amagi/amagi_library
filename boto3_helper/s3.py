@@ -11,11 +11,13 @@ from smart_open import open
 try:
     from amagi_library.boto3_helper.session import Session
     from amagi_library.boto3_helper.client import Client
+    from amagi_library.helper.http_requests import HTTPRequests
 
 except ModuleNotFoundError:
     logging.info("Module called internally")
     from boto3_helper.session import Session
     from boto3_helper.client import Client
+    from helper.http_requests import HTTPRequests
 
 
 class DisplayS3Object(object):
@@ -75,6 +77,47 @@ class CopyToS3(object):
                       transport_params={'session': self.destination_session_instance}) as f_write:
                 # This expects data in bytes format
                 f_write.write(kwargs["data"])
+
+        except BaseException:
+            logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
+            raise BaseException("Problem in s3.py")
+
+
+class CopyFromURLtoS3(object):
+    """
+    This class provide interface to copy object from one s3 to another s3
+    """
+
+    def __init__(self, **kwargs):
+        # Required variable to drive this Class, expected to be provided from parent Object
+        self.destination_aws_details = None
+
+        self.__dict__.update(kwargs)
+
+        self.url_session = HTTPRequests()
+
+        self.destination_session_instance = Session(aws_details=self.destination_aws_details).return_session()
+
+        logging.debug(f"Instance variables for CopyFromURLtoS3 : {self.__dict__}")
+
+    def __del__(self):
+
+        self.url_session.__del__()
+
+    def copy_from_source_url_to_destination_s3(self, **kwargs):
+        """
+        This method downloads file from url to s3
+        """
+        try:
+
+            object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
+                                         f"{kwargs['object_destination_path']}"
+            if self.url_session.call_head_requests(url=kwargs["url"]).status_code == 200:
+                with open(kwargs["url"], "rb") as f_read:
+                    with open(object_destination_address, "wb",
+                              transport_params={"session": self.destination_session_instance}) as f_write:
+                        for data_line in f_read:
+                            f_write.write(data_line)
 
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
@@ -278,7 +321,7 @@ class S3ObjectList(object):
         else:
             return False
 
-    def __add_details_to_object_dict(self, list_objects_response: dict, last_modified = None):
+    def __add_details_to_object_dict(self, list_objects_response: dict, last_modified=None):
         """
         This method recursively add data into object Dictionary
         :param list_objects_response: list_objects_response from boto3 s3 client
@@ -329,7 +372,8 @@ class S3ObjectList(object):
 
             # Required parameter to call list_objects_v2
             self.__add_details_to_object_dict(self.s3_instance.list_objects_v2(Bucket=self.s3_details["bucket_name"],
-                                                                               Prefix=self.folder_to_check), last_modified)
+                                                                               Prefix=self.folder_to_check),
+                                              last_modified)
 
             logging.debug(f"Objects matching filter criteria : {self.object_dict}")
 
