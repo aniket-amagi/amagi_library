@@ -3,4 +3,4 @@
 """
 Init file for boto3_helper
 """
-__all__ = ["batch", "cloudformation", "dynamo", "s3", "ses"]
+__all__ = ["batch", "dynamo", "s3", "ses", "s3_depreciated"]

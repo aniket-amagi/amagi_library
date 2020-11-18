@@ -36,7 +36,7 @@ class SaveReport(object):
             work_dir = WorkDirectory(prefix="save_report").get_work_dir()
             file_path = os.path.join(work_dir, f"{uuid.uuid1()}.{format}")
 
-        with open(file_path, 'w') as file:
+        with open(file_path, "w") as file:
             header_text = None
             header_list = self.headers if self.headers else self.get_fields(obj_list)
             row_text = ",".join(header_list) if header_list else None

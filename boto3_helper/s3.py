@@ -43,12 +43,11 @@ class DisplayS3Object(object):
                              f"{kwargs['object_path']}"
 
             # The return data is in binary
-            return open(object_address, 'rb',
-                        transport_params={'session': self.session_instance}).read()
+            return open(object_address, "rb",
+                        transport_params={"session": self.session_instance}).read()
 
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
-            raise BaseException("Problem in s3.py")
 
 
 class CopyToS3(object):
@@ -73,20 +72,20 @@ class CopyToS3(object):
             # TODO : HANDLE MULTIPART UPLOAD
             object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
                                          f"{kwargs['object_destination_path']}"
-            with open(object_destination_address, 'wb',
-                      transport_params={'session': self.destination_session_instance}) as f_write:
+            with open(object_destination_address, "wb",
+                      transport_params={"session": self.destination_session_instance}) as f_write:
                 # This expects data in bytes format
                 f_write.write(kwargs["data"])
 
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
-            raise BaseException("Problem in s3.py")
 
 
 class CopyFromURLtoS3(object):
     """
     This class provide interface to copy object from one s3 to another s3
     """
+    maximum_part_size = 5 * 1024 ** 3
 
     def __init__(self, **kwargs):
         # Required variable to drive this Class, expected to be provided from parent Object
@@ -94,15 +93,25 @@ class CopyFromURLtoS3(object):
 
         self.__dict__.update(kwargs)
 
-        self.url_session = HTTPRequests()
+        # DEFAULT CHUNK SIZE
+        self.chunk_size = 256 * 1024 ** 2
 
         self.destination_session_instance = Session(aws_details=self.destination_aws_details).return_session()
 
         logging.debug(f"Instance variables for CopyFromURLtoS3 : {self.__dict__}")
 
-    def __del__(self):
-
-        self.url_session.__del__()
+    @staticmethod
+    def read_in_chunks(file_object, chunk_size):
+        """
+        Lazy function (generator) to read a file piece by piece.
+        Default chunk size: 1k.
+        xref: https://dataroz.com/stream-large-files-between-s3-and-gcs-python/
+        """
+        while True:
+            data = file_object.read(chunk_size)
+            if not data:
+                break
+            yield data
 
     def copy_from_source_url_to_destination_s3(self, **kwargs):
         """
@@ -110,18 +119,22 @@ class CopyFromURLtoS3(object):
         """
         try:
 
+            chunk_size = kwargs["chunk_size"] if kwargs.get("chunk_size") else self.chunk_size
             object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
                                          f"{kwargs['object_destination_path']}"
-            #if self.url_session.call_get_requests(url=kwargs["url"]).status_code == 200:
+
             with open(kwargs["url"], "rb") as f_read:
+                # TODO : Handle multipart_upload and check based on AWS constraints
+                # if f_read.content_length >= CopyFromURLtoS3.maximum_part_size:
+                # if f_read.content_length >= self.chunk_size:
                 with open(object_destination_address, "wb",
-                          transport_params={"session": self.destination_session_instance}) as f_write:
-                    for data_line in f_read:
+                          transport_params={"session": self.destination_session_instance,
+                                            "min_part_size": chunk_size}) as f_write:
+                    for data_line in CopyFromURLtoS3.read_in_chunks(f_read, chunk_size):
                         f_write.write(data_line)
 
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
-            raise BaseException("Problem in s3.py")
 
 
 class CopyObjectFromS3ToS3(object):
@@ -150,16 +163,15 @@ class CopyObjectFromS3ToS3(object):
                                       f"{kwargs['object_original_path']}"
             object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
                                          f"{kwargs['object_destination_path']}"
-            with open(object_original_address, 'rb',
-                      transport_params={'session': self.source_session_instance}) as f_read:
-                with open(object_destination_address, 'wb',
-                          transport_params={'session': self.destination_session_instance}) as f_write:
+            with open(object_original_address, "rb",
+                      transport_params={"session": self.source_session_instance}) as f_read:
+                with open(object_destination_address, "wb",
+                          transport_params={"session": self.destination_session_instance}) as f_write:
                     for data_line in f_read:
                         f_write.write(data_line)
 
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
-            raise BaseException("Problem in s3.py")
 
 
 class CopyObjectFromS3ToLocal(object):
@@ -184,14 +196,13 @@ class CopyObjectFromS3ToLocal(object):
             object_address = f"s3://{kwargs['s3_details']['bucket_name']}/" \
                              f"{kwargs['object_path']}"
 
-            with open(object_address, 'rb', transport_params={'session': self.session_instance}) as s3_file:
-                with open(kwargs["local_file_path"], 'wb') as local_file:
+            with open(object_address, "rb", transport_params={"session": self.session_instance}) as s3_file:
+                with open(kwargs["local_file_path"], "wb") as local_file:
                     for line in s3_file:
                         local_file.write(line)
 
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
-            raise BaseException("Problem in s3.py")
 
 
 class S3DeleteObject(object):
@@ -239,7 +250,6 @@ class S3DeleteObject(object):
                                                Key=kwargs["object_path"]))
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
-            raise BaseException("Problem in s3.py")
 
 
 class MoveObjectFromS3ToS3(object):
@@ -274,7 +284,6 @@ class MoveObjectFromS3ToS3(object):
                                object_path=kwargs["object_original_path"])
         except BaseException:
             logging.error(f"Uncaught exception in s3.py: {traceback.format_exc()}")
-            raise BaseException("Problem in s3.py")
 
 
 class S3ObjectList(object):
@@ -333,7 +342,7 @@ class S3ObjectList(object):
             for item in list_objects_response["Contents"]:
                 if self.__object_filter(item):
                     match = True
-                    if last_modified and item['LastModified'] < last_modified:
+                    if last_modified and item["LastModified"] < last_modified:
                         match = False
                     if match:
                         object_name = item["Key"]
@@ -365,15 +374,16 @@ class S3ObjectList(object):
 
         self.s3_details = kwargs["s3_details"]
 
-        last_modified = kwargs['last_modified'] if "last_modified" in kwargs else None
+        last_modified = kwargs["last_modified"] if "last_modified" in kwargs else None
 
         try:
             self.object_dict = dict()
 
             # Required parameter to call list_objects_v2
-            self.__add_details_to_object_dict(self.s3_instance.list_objects_v2(Bucket=self.s3_details["bucket_name"],
-                                                                               Prefix=self.folder_to_check),
-                                              last_modified)
+            self.__add_details_to_object_dict(
+                self.s3_instance.list_objects_v2(Bucket=self.s3_details["bucket_name"],
+                                                 Prefix=self.folder_to_check),
+                last_modified)
 
             logging.debug(f"Objects matching filter criteria : {self.object_dict}")
 
@@ -381,7 +391,6 @@ class S3ObjectList(object):
 
         except BaseException:
             logging.error(f"Uncaught exception in s3.py : {traceback.format_exc()}")
-            raise BaseException("Problem in s3.py")
         return self.object_dict
 
 
