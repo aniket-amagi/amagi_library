@@ -41,18 +41,18 @@ class Matcher(object):
 
     def is_matching_rule(self, rule, asset, asset_key):
         matched = False
-        if rule[asset_key]['match_type'] == "exact":
-            matched = (asset[asset_key] in rule[asset_key]['values']) ^ rule[asset_key]['invert']
-        elif rule[asset_key]['match_type'] == "regex":
+        if rule[asset_key]["match_type"] == "exact":
+            matched = (asset[asset_key] in rule[asset_key]["values"]) ^ rule[asset_key]["invert"]
+        elif rule[asset_key]["match_type"] == "regex":
             pattern_matched = False
-            for pattern_str in rule[asset_key]['patterns']:
+            for pattern_str in rule[asset_key]["patterns"]:
                 pattern = re.compile(pattern_str)
                 if pattern.match(asset[asset_key]):
                     pattern_matched = True
-            matched = pattern_matched ^ rule[asset_key]['invert']
-        elif rule[asset_key]['match_type'] == "range":
-            matched = (rule[asset_key]['start'] <= asset[asset_key] <= rule[asset_key]['end']) ^ rule[asset_key][
-                'invert']
+            matched = pattern_matched ^ rule[asset_key]["invert"]
+        elif rule[asset_key]["match_type"] == "range":
+            matched = (rule[asset_key]["start"] <= asset[asset_key] <= rule[asset_key]["end"]) ^ rule[asset_key][
+                "invert"]
         else:
             matched = False
         return matched

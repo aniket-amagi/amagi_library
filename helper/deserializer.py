@@ -20,7 +20,7 @@ class Deserializer(object):
     """
 
     @staticmethod
-    def json_deserializer(text: str, encoding='utf-8'):
+    def json_deserializer(text: str, encoding="utf-8"):
         """
         This method deserializes the data received in json format
         :param encoding: Encoding of text (Generally assumed utf-8)
@@ -29,8 +29,8 @@ class Deserializer(object):
         """
         data_dict = None
         try:
-            if not encoding == 'utf-8':
-                encoding_handled_text = unicode(text.encode(encoding), 'utf-8')
+            if not encoding == "utf-8":
+                encoding_handled_text = unicode(text.encode(encoding), "utf-8")
             else:
                 encoding_handled_text = text
             data_dict = json.loads(encoding_handled_text)
@@ -41,11 +41,11 @@ class Deserializer(object):
         return data_dict
 
     @staticmethod
-    def csv_deserializer(text: str, encoding='utf-8'):
+    def csv_deserializer(text: str, encoding="utf-8"):
         data_dict = None
         try:
-            if not encoding == 'utf-8':
-                encoding_handled_text = unicode(text.encode(encoding), 'utf-8')
+            if not encoding == "utf-8":
+                encoding_handled_text = unicode(text.encode(encoding), "utf-8")
             else:
                 encoding_handled_text = text
             dialect = csv.Sniffer().sniff(encoding_handled_text)
@@ -56,11 +56,11 @@ class Deserializer(object):
         return data_dict
 
     @staticmethod
-    def yaml_deserializer(text: str, encoding='utf-8'):
+    def yaml_deserializer(text: str, encoding="utf-8"):
         data_dict = None
         try:
-            if not encoding == 'utf-8':
-                encoding_handled_text = unicode(text.encode(encoding), 'utf-8')
+            if not encoding == "utf-8":
+                encoding_handled_text = unicode(text.encode(encoding), "utf-8")
             else:
                 encoding_handled_text = text
             data_dict = yaml.load(encoding_handled_text)

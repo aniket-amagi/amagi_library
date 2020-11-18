@@ -143,7 +143,7 @@ class DynamoAccessor(object):
         :param table_name: table_name
         :param pk_name: primary_key
         :param pk_value: primary_value
-        :param col_dict: column_dict ex: {'asset_id' : {'short_key':'a', 'new_value' : 123}}
+        :param col_dict: column_dict ex: {"asset_id" : {"short_key":"a", "new_value" : 123}}
         :return:
         """
         response = None
@@ -156,9 +156,9 @@ class DynamoAccessor(object):
             for key, value in col_dict.items():
                 update_expression += f" {key} = {value['short_key']},"
                 expression_attribute_values.update({
-                    value['short_key']: value['new_value']
+                    value["short_key"]: value["new_value"]
                 })
-            update_expression = update_expression.rstrip(',')
+            update_expression = update_expression.rstrip(",")
 
             logging.debug(f"Update Expression : {update_expression}")
 
