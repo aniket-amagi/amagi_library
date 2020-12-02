@@ -5,16 +5,15 @@ This is a helper script for consuming Blip Playlist API
 """
 import json
 import logging
-import urllib.request
 
 from datetime import datetime
-from urllib.parse import urlencode
 
 try:
     from amagi_library.helper.http_requests import HTTPRequests
 except ModuleNotFoundError:
     logging.info("Module called internally")
     from helper.http_requests import HTTPRequests
+
 
 class Playlist(object):
     """
@@ -121,19 +120,19 @@ class Playlist(object):
         datestr = "{0:4d}-{1:02d}-{2:02d}".format(
             date.year, date.month, date.day)
         params = {
-            'feed_id': feed_id,
-            'start_date': datestr,
-            'end_date': datestr,
-            'ptype': "normal",
+            "feed_id": feed_id,
+            "start_date": datestr,
+            "end_date": datestr,
+            "ptype": "normal",
             "auth_token": auth_token
         }
         if published:
-            params['status'] = "published"
+            params["status"] = "published"
         return f"https://{self.customer}.amagi.tv/v1/api/playlist.json", params
 
     def playlist_date(self, playlist):
         return playlist["created_at"]
-        
+
     def get_days_playlists(self, feed_id, token, datestr, published):
         url, params = self.playlists_url(feed_id, token, datestr, published)
         playlists, _ = self.get_playlists(url, params, "json")
@@ -142,23 +141,23 @@ class Playlist(object):
                 playlists["playlists"], key=self.playlist_date, reverse=True)
             return playlists_sorted
 
-    def get_playlist_csv(self, playlist_id, account_name, channel_code, feed_id = None, uploaded = False):
+    def get_playlist_csv(self, playlist_id, account_name, channel_code, feed_id=None, uploaded=False):
         csv_url = f"https://{self.customer}.amagi.tv/{account_name}/{channel_code}/playlist/{playlist_id}.csv"
         params = {
             "auth_token": self.token
         }
         if uploaded:
             csv_url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}/download"
-            params['feed_id'] = feed_id
-        text, format = self.get_playlists(csv_url, params, "csv")
-        return text, format
+            params["feed_id"] = feed_id
+        return self.get_playlists(csv_url, params, "csv")
 
     def get_asset_status(self, playlist_id, **kwargs):
         url = f"https://{self.customer}.amagi.tv/v1/api/playlist/{playlist_id}/asset_status"
         logging.info(f"Asset Status url invoked to get details : {url}")
         kwargs.update(self.default_payload)
-        return self.http_requests_instance.call_get_requests(url=url, params=kwargs, 
-            error_message="Error occurred when trying to access Blip for Asset Status")
+        return self.http_requests_instance.call_get_requests(url=url, params=kwargs,
+                                                             error_message="Error occurred when trying to access Blip for Asset Status")
+
 
 if __name__ == "__main__":
     # LOGGING #
