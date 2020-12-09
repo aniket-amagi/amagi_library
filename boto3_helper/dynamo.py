@@ -29,6 +29,16 @@ class DynamoAccessor(object):
 
         logging.debug(f"Instance variables for DynamoResource : {self.__dict__}")
 
+    def is_table_present(self, table_name):
+        try:
+            table = self.dynamo_db_resource.Table(table_name)
+            timestamp = table.creation_date_time
+            logging.info(f"Dynamodb table {table} was created at {timestamp}")
+            return True
+        except:
+            logging.info(f"Table {table_name} not found")
+            return False
+
     def create_table(self, table_name: str, partition_key: str,
                      partition_key_type="S", sort_key=None,
                      sort_key_type="S", other_key_list=None):
