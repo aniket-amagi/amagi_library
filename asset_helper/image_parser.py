@@ -22,7 +22,10 @@ class ImageParser(object):
         logging.debug(f"Instance variables for ImageParser : {self.__dict__}")
 
     def __del__(self):
-        self.image_parser.close()
+        try:
+            self.image_parser.close()
+        except Exception:
+            pass 
 
     def get_image_details(self, byte_data: bytes) -> dict:
         """
