@@ -123,7 +123,7 @@ class CopyFromURLtoS3(object):
             object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
                                          f"{kwargs['object_destination_path']}"
             transport_params = kwargs.get('transport_params')
-            with open(kwargs["url"], "rb", transport_params = transport_params) as f_read:
+            with open(kwargs["url"], "rb", transport_params=transport_params) as f_read:
                 # TODO : Handle multipart_upload and check based on AWS constraints
                 # if f_read.content_length >= CopyFromURLtoS3.maximum_part_size:
                 # if f_read.content_length >= self.chunk_size:
@@ -149,16 +149,34 @@ class CopyObjectFromS3ToS3(object):
 
         self.__dict__.update(kwargs)
 
+        # DEFAULT CHUNK SIZE
+        self.chunk_size = 256 * 1024 ** 2
+
         self.source_session_instance = Session(aws_details=self.source_aws_details).return_session()
         self.destination_session_instance = Session(aws_details=self.destination_aws_details).return_session()
 
         logging.debug(f"Instance variables for CopyObjectFromS3ToS3 : {self.__dict__}")
 
+    @staticmethod
+    def read_in_chunks(file_object, chunk_size):
+        """
+        Lazy function (generator) to read a file piece by piece.
+        Default chunk size: 1k.
+        xref: https://dataroz.com/stream-large-files-between-s3-and-gcs-python/
+        """
+        while True:
+            data = file_object.read(chunk_size)
+            if not data:
+                break
+            yield data
+
     def copy_from_source_to_destination_s3(self, **kwargs):
         """
         This method downloads file from one s3 to another s3
         """
+
         try:
+            chunk_size = kwargs["chunk_size"] if kwargs.get("chunk_size") else self.chunk_size
             object_original_address = f"s3://{kwargs['source_s3_details']['bucket_name']}/" \
                                       f"{kwargs['object_original_path']}"
             object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
@@ -166,8 +184,9 @@ class CopyObjectFromS3ToS3(object):
             with open(object_original_address, "rb",
                       transport_params={"session": self.source_session_instance}) as f_read:
                 with open(object_destination_address, "wb",
-                          transport_params={"session": self.destination_session_instance}) as f_write:
-                    for data_line in f_read:
+                          transport_params={"session": self.destination_session_instance,
+                                            "min_part_size": chunk_size}) as f_write:
+                    for data_line in CopyObjectFromS3ToS3.read_in_chunks(f_read, chunk_size):
                         f_write.write(data_line)
 
         except BaseException:
