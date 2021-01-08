@@ -122,8 +122,8 @@ class CopyFromURLtoS3(object):
             chunk_size = kwargs["chunk_size"] if kwargs.get("chunk_size") else self.chunk_size
             object_destination_address = f"s3://{kwargs['destination_s3_details']['bucket_name']}/" \
                                          f"{kwargs['object_destination_path']}"
-
-            with open(kwargs["url"], "rb") as f_read:
+            transport_params = kwargs.get('transport_params')
+            with open(kwargs["url"], "rb", transport_params = transport_params) as f_read:
                 # TODO : Handle multipart_upload and check based on AWS constraints
                 # if f_read.content_length >= CopyFromURLtoS3.maximum_part_size:
                 # if f_read.content_length >= self.chunk_size:
