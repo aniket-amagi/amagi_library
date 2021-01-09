@@ -16,7 +16,7 @@ class DynamoDB(StatusManager):
     last_updated_timestamp = None
 
     def __init__(self, **kwargs):
-        cfg = kwargs["status_manager"]
+        cfg = kwargs["config"]["status_manager"]
         aws_details = cfg["aws_details"] if "aws_details" in cfg else None
         self.dynamo = DynamoAccessor(aws_details=aws_details)
         self.table_name = cfg["table_name"] if "table_name" in cfg else None

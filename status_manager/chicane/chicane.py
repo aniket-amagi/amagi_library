@@ -19,7 +19,7 @@ class Chicane(StatusManager):
     last_updated_timestamp = None
 
     def __init__(self, **kwargs):
-        cfg = kwargs["status_manager"]
+        cfg = kwargs["config"]["status_manager"]
         self.url = cfg["url"] if "url" in cfg else None
         self.request_body = cfg["body"] if "body" in cfg else None
         self.http_request = HTTPRequests()
