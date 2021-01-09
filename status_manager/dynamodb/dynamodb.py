@@ -6,7 +6,7 @@ This script is for dynamodb based status maanger
 import logging
 from datetime import datetime
 
-from workflows.transcode.status_manager.status_manager import StatusManager
+from amagi_library.status_manager.status_manager import StatusManager
 
 from amagi_library.boto3_helper.dynamo import DynamoAccessor
 
@@ -16,7 +16,7 @@ class DynamoDB(StatusManager):
     last_updated_timestamp = None
 
     def __init__(self, **kwargs):
-        cfg = kwargs["config"]["status_manager"]
+        cfg = kwargs["status_manager"]
         aws_details = cfg["aws_details"] if "aws_details" in cfg else None
         self.dynamo = DynamoAccessor(aws_details=aws_details)
         self.table_name = cfg["table_name"] if "table_name" in cfg else None

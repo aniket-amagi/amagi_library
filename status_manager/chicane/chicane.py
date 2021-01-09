@@ -11,7 +11,7 @@ from copy import deepcopy
 from datetime import datetime
 
 from amagi_library.helper.http_requests import HTTPRequests
-from workflows.transcode.status_manager.status_manager import StatusManager
+from amagi_library.status_manager.status_manager import StatusManager
 
 
 class Chicane(StatusManager):
@@ -19,7 +19,7 @@ class Chicane(StatusManager):
     last_updated_timestamp = None
 
     def __init__(self, **kwargs):
-        cfg = kwargs["config"]["status_manager"]
+        cfg = kwargs["status_manager"]
         self.url = cfg["url"] if "url" in cfg else None
         self.request_body = cfg["body"] if "body" in cfg else None
         self.http_request = HTTPRequests()

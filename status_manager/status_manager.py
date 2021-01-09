@@ -18,8 +18,8 @@ class StatusManager(object):
     @classmethod
     def get_status_manager(cls, typ, **kwargs):
         if typ == "chicane":
-            from workflows.transcode.status_manager.chicane.chicane import Chicane
+            from amagi_library.status_manager.chicane.chicane import Chicane
             return Chicane(**kwargs)
         elif typ == "dynamodb":
-            from workflows.transcode.status_manager.dynamodb.dynamodb import DynamoDB
+            from amagi_library.status_manager.dynamodb.dynamodb import DynamoDB
             return DynamoDB(**kwargs)
