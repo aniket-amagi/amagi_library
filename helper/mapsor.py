@@ -37,6 +37,7 @@ class Mapsor(object):
         xref: https://mapsor.amagi.tv/docs/#operation/createContainerJob
         :param kwargs: optional arguments
         """
+        response = None
         payload_dict = dict()
         required_list = ["cloud", "region", "id", "customer"]
         if all(required_key in kwargs for required_key in required_list):
@@ -56,6 +57,8 @@ class Mapsor(object):
             logging.info(f"Response from Mapsor : {response.text}")
         else:
             logging.error("One of the required key(cloud, region, id, customer) is missing")
+
+        return response
 
     def submitted_job_status(self, job_id: str):
         """
